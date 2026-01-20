@@ -11,6 +11,7 @@ survey.data <- read.csv("results-survey_cleaned.csv")
 
 #Unterscheidung: Wer ist sturkturiert und wer schiebt auf?
 
+
 survey.data <- survey.data %>%
   mutate(
     Lerntyp = case_when(
@@ -28,6 +29,21 @@ survey.data <- survey.data %>%
 
 ggplot(data = survey.data, aes(x = Lerntyp)) +
   geom_bar() 
+
+## Kommentar: Die Items korrelieren nicht wirklich miteinander (Cronbachs alpha <0.7)
+# items_strukturiert <- processed_data %>%
+#    select(
+#        Einstellung_Pflicht_Ball_Num,
+#        Einstellung_Aufschieben_Num
+#      )
+# alpha(items_strukturiert, check.keys = TRUE)
+# 
+## Reliability analysis   
+## Call: alpha(x = items_strukturiert, check.keys = TRUE)
+## 
+## raw_alpha
+## 0.5
+## --> vielleicht lieber die Items einzeln betrachten?
 
 
 #Frage 2 - Welche Materialien bringen die höchste Zufriedenheit?
