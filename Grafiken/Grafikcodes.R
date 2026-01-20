@@ -289,13 +289,42 @@ materialnutzung.semester
 
 #Frage 5 - Unterscheidet sich die allgemeine Zufriedenheit zwischen KI-Nutzern und KI-Verweigerern
 
-#Wir schauen uns erstmal an wie genau die Zahlen verteilt sind
-survey.data %>% 
-  count(Nutzung_KI_Num) %>%
+#Wir Kategorisieren die Leute nach Häufigkeit der Nutzung von KI 
+ai.analysis <- survey.data %>% 
   mutate(
-  KI-Type = case_when(
-    KI_Nutzung_Num <= 2 ~ "Wenig/Keine Nutzung",
-    KI_Nutzung_Num >= 4 ~ "Starke Nutzung",
+  KI.Type = case_when(
+    Nutzung_KI_Num <= 2 ~ "Wenig/Keine Nutzung",
+    Nutzung_KI_Num >= 4 ~ "Starke Nutzung",
     TRUE ~ "Mittelere Nutzung"
   ))
+
+ai.analysis$KI.Type <- factor(ai.analysis$KI.Type,
+                              levels = c("Wenig/Keine Nutzung", "Mittelere Nutzung", "Starke Nutzung"))
+
+#Wir überprüfen welche der KI Nutzungstypen besser 
+ai.satisfaction <- ai.analysis %>%
+  group_by(KI.Type) %>%
+  summarise(
+    avg.Zufriedenheit = mean(Zufriedenheit_Score, na.rm = TRUE),
+    Anzahl.Personen = n()
+  )
+
+#Erstellen eines Plots
+ggplot(ai.analysis, aes(x = KI.Type, y = Zufriedenheit_Score, fill = KI.Type)) +
+  geom_boxplot(alpha = 0.7) +
+  geom_jitter(width = 0.2, alpha = 0.3) +
+  labs(title = "Macht KI Nutzung Zufriedener",
+       subtitle = "Vergleich der Studienzufridenheitnach Nutzungshäufigkeit von KI",
+       x = "Nutzungshäufigkeit",
+       y = "Zufriedenheitsscore (1-5)") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+#Frage 6 - Sind aufschieber unzufriedener?
+
+
+
+
+
+
 
