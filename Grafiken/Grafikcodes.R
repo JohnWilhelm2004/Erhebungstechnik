@@ -247,14 +247,15 @@ survey.data %>%
 
 
 #Frage 4 - Wie verändert sich Materialnutzung im Studienverlauf? Werden Studenten selbstständiger?
-survey.data <- survey.data %>%
+material.survey.data <- survey.data %>%
+  #Wir gruppieren die Semster zusammen damit wir bessere Aussagen treffen können da für einzelne
+  #Semester die Daten nicht wirklich ausreichend sind um so genau zu unterscheiden
   mutate(
     Semestergruppe = case_when(
       Fachsemester <= 2 ~ "Start",
       Fachsemester <= 5 ~ "Mitte",
       TRUE ~ "Ende"
     )
-    
   ) %>% 
   pivot_longer(
     cols = starts_with("Nutzung_"),
@@ -264,10 +265,13 @@ survey.data <- survey.data %>%
   group_by(Semestergruppe, Materialnutzung) %>%
   summarise(
     avg.Nutzung = mean(Nutzungshäufigkeit, na.rm = TRUE)
-  )
+  ) 
 
-
-
+#Wir erstellen den Linienplot um die veränderung der Materialnutzung im Semes
+materialnutzung.semester <- ggplot(survey.data, aes(x = Semestergruppe,
+                                                    y = avg.Nutzung,
+                                                    group = Materialnutzung)) +
+  geom_line()
 
 
 
