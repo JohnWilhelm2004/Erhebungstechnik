@@ -1,0 +1,11 @@
+---
+title: "Bericht_Erhebungstechnik"
+author: "John Wilhelm, Lukas König, Annika Homm"
+date: "2026-01-20"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
