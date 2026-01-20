@@ -216,13 +216,6 @@ ggplot(data = succes.material.analysis,
   ) +
   theme_minimal()
 
-
-
-
-
-
-
-
 # Zusammenfassung der Studiengänge in MINT/Lehramt/Sonstige
 
 
