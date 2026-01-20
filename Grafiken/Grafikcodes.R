@@ -3,6 +3,7 @@
 
 #Library installieren 
 library(tidyverse)
+library(psych)
 
 #Reinladen der Umfrage ins global Enviorment
 survey.data <- read.csv("results-survey_cleaned.csv")
@@ -31,13 +32,12 @@ ggplot(data = survey.data, aes(x = Lerntyp)) +
   geom_bar() 
 
 ## Kommentar: Die Items korrelieren nicht wirklich miteinander (Cronbachs alpha <0.7)
-# items_strukturiert <- processed_data %>%
+# items_strukturiert <- survey.data %>%
 #    select(
 #        Einstellung_Pflicht_Ball_Num,
 #        Einstellung_Aufschieben_Num
 #      )
 # alpha(items_strukturiert, check.keys = TRUE)
-# 
 ## Reliability analysis   
 ## Call: alpha(x = items_strukturiert, check.keys = TRUE)
 ## 
@@ -162,6 +162,33 @@ survey.data <- survey.data %>%
     #Jetzt einfach alle Zusammenaddieren(Höchste PunktZahl ist 20)
     Erfolgs_Score = Effekt_Sicherheit_Num + Effekt_Motivation_Num + Effizienz_Score + Effekt_Relevanz_Num
   )
+
+## Kommentar:
+# items_effekt <- survey.data %>%
+#   mutate(Effizienz_Score = 6 - Effekt_Zeitaufwand_Num) %>%
+#   select(
+#     Effekt_Sicherheit_Num,
+#     Effekt_Motivation_Num,
+#     Effizienz_Score,
+#     Effekt_Relevanz_Num
+#   )
+# alpha(items_effekt, check.keys = TRUE)
+## raw_alpha
+## 0.51
+## auch zu niedrig
+## Besser:
+# items_effekt <- survey.data %>%
+#   select(
+#     Effekt_Sicherheit_Num,
+#     Effekt_Motivation_Num,
+#     Effekt_Selbststaendig_Num,
+#     Effekt_Stress_Num,
+#     Effekt_Relevanz_Num
+#   )
+# alpha(items_effekt, check.keys = TRUE)
+# # raw_alpha
+# # 0.79 
+## Außerdem: Was bedeutet Erfolg genau? Warum sind diese Items dafür ausschlaggebend
 
 #Labeling der Personen nach Erfolgsscore
 survey.data <- survey.data  %>%
