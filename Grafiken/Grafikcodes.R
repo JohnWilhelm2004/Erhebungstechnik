@@ -94,7 +94,8 @@ ggplot(data = satisfaction.analysis,
        x = "", y = "Score") +
   
   theme_minimal() +
-  theme(legend.position = "none")
+  theme(legend.position = "none") +
+  
 
 ###########################
 # Boxplotdiagramm
@@ -123,7 +124,7 @@ ggplot(raw_plot_data,
        subtitle = "Boxplot zeigt Verteilung, roter Punkt ist der Durchschnitt",
        x = "",
        y = "Zufriedenheitsscore") +
-  theme_minimal()
+  theme_minimal() + 
 
 
 
@@ -212,7 +213,8 @@ ggplot(data = succes.material.analysis,
     x = "",
     y = "Avg. Nutzung (1-5)"
   ) +
-  theme_minimal()
+  theme_minimal() +
+  scale_color_viridis_d()
 
 # Zusammenfassung der Studiengänge in MINT/Lehramt/Sonstige
 
@@ -246,8 +248,10 @@ survey.data %>%
   head(50)
 
 
+survey.data <- read.csv("results-survey_cleaned.csv")
+
 #Frage 4 - Wie verändert sich Materialnutzung im Studienverlauf? Werden Studenten selbstständiger?
-material.survey.data <- survey.data %>%
+verlauf.daten <- survey.data %>%
   #Wir gruppieren die Semster zusammen damit wir bessere Aussagen treffen können da für einzelne
   #Semester die Daten nicht wirklich ausreichend sind um so genau zu unterscheiden
   mutate(
@@ -267,11 +271,59 @@ material.survey.data <- survey.data %>%
     avg.Nutzung = mean(Nutzungshäufigkeit, na.rm = TRUE)
   ) 
 
+#Wir bringen Ordung in die Semestergruppensortierung damit das im Plot später richtig dargestellt wird 
+verlauf.daten$Semestergruppe <- factor(verlauf.daten$Semestergruppe,
+                                       levels = c("Start", "Mitte", "Ende"))
+
 #Wir erstellen den Linienplot um die veränderung der Materialnutzung im Semes
-materialnutzung.semester <- ggplot(survey.data, aes(x = Semestergruppe,
+materialnutzung.semester <- ggplot(verlauf.daten, aes(x = Semestergruppe,
                                                     y = avg.Nutzung,
-                                                    group = Materialnutzung)) +
-  geom_line()
+                                                    group = Materialnutzung,
+                                                    color = Materialnutzung)) +
+  geom_line(size = 1.2) +
+  geom_point(size = 3) +
+  scale_color_viridis_d() +
+  theme_minimal()
+
+materialnutzung.semester
+
+#Frage 5 - Unterscheidet sich die allgemeine Zufriedenheit zwischen KI-Nutzern und KI-Verweigerern
+
+#Wir Kategorisieren die Leute nach Häufigkeit der Nutzung von KI 
+ai.analysis <- survey.data %>% 
+  mutate(
+  KI.Type = case_when(
+    Nutzung_KI_Num <= 2 ~ "Wenig/Keine Nutzung",
+    Nutzung_KI_Num >= 4 ~ "Starke Nutzung",
+    TRUE ~ "Mittelere Nutzung"
+  ))
+
+ai.analysis$KI.Type <- factor(ai.analysis$KI.Type,
+                              levels = c("Wenig/Keine Nutzung", "Mittelere Nutzung", "Starke Nutzung"))
+
+#Wir überprüfen welche der KI Nutzungstypen besser 
+ai.satisfaction <- ai.analysis %>%
+  group_by(KI.Type) %>%
+  summarise(
+    avg.Zufriedenheit = mean(Zufriedenheit_Score, na.rm = TRUE),
+    Anzahl.Personen = n()
+  )
+
+#Erstellen eines Plots
+ggplot(ai.analysis, aes(x = KI.Type, y = Zufriedenheit_Score, fill = KI.Type)) +
+  geom_boxplot(alpha = 0.7) +
+  geom_jitter(width = 0.2, alpha = 0.3) +
+  labs(title = "Macht KI Nutzung Zufriedener",
+       subtitle = "Vergleich der Studienzufridenheitnach Nutzungshäufigkeit von KI",
+       x = "Nutzungshäufigkeit",
+       y = "Zufriedenheitsscore (1-5)") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+#Frage 6 - Sind aufschieber unzufriedener?
+
+
+
 
 
 
