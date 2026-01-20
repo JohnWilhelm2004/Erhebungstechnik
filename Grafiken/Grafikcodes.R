@@ -2,7 +2,7 @@
 
 
 #Library installieren 
-#library(tidyverse)
+library(tidyverse)
 
 #Reinladen der Umfrage ins global Enviorment
 survey.data <- read.csv("results-survey_cleaned.csv")
@@ -28,8 +28,6 @@ survey.data <- survey.data %>%
 
 ggplot(data = survey.data, aes(x = Lerntyp)) +
   geom_bar() 
-
-
 
 
 #Frage 2 - Welche Materialien bringen die höchste Zufriedenheit?
@@ -220,8 +218,6 @@ ggplot(data = succes.material.analysis,
 
 
 table(survey.data$Fakultaet)
-library(dplyr)
-library(stringr)
 
 survey.data <- survey.data %>%
   mutate(
@@ -248,3 +244,31 @@ survey.data <- survey.data %>%
 survey.data %>%
   count(Fachbereich_Gruppe, Fakultaet) %>%
   head(50)
+
+
+#Frage 4 - Wie verändert sich Materialnutzung im Studienverlauf? Werden Studenten selbstständiger?
+survey.data <- survey.data %>%
+  mutate(
+    Semestergruppe = case_when(
+      Fachsemester <= 2 ~ "Start",
+      Fachsemester <= 5 ~ "Mitte",
+      TRUE ~ "Ende"
+    )
+    
+  ) %>% 
+  pivot_longer(
+    cols = starts_with("Nutzung_"),
+    names_to = "Materialnutzung",
+    values_to = "Nutzungshäufigkeit"
+  ) %>% 
+  group_by(Semestergruppe, Materialnutzung) %>%
+  summarise(
+    avg.Nutzung = mean(Nutzungshäufigkeit, na.rm = TRUE)
+  )
+
+
+
+
+
+
+
