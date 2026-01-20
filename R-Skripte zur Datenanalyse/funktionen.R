@@ -40,6 +40,7 @@ calculate_metric_stats <- function(data, var_name) {
 #      Beispiel: Wie viel Prozent studieren Informatik?
 # ------------------------------------------------------------------------------
 calculate_cat_stats <- function(data, var_name) {
+  
   check_variable_exists(data, var_name)
   check_is_factor(data, var_name)
   

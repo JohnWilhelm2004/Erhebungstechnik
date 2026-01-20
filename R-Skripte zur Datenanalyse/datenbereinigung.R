@@ -8,6 +8,7 @@ library(tidyverse)
 
 # 2. Daten einlesen
 # Wir lesen die CSV ein.
+# setwd("C:/Users/Annika/Documents/ErhebTech")
 raw_data <- read_csv("results-survey478754.csv", show_col_types = FALSE)
 
 # ==============================================================================
@@ -227,62 +228,61 @@ processed_data <- processed_data %>%
 # SCHRITT E: Feature Engineering (Neue Variablen erstellen)
 # ==============================================================================
 
-library(psych)
-
-# (Äquivalent zur Titanic-Aufgabe "Extrahiert aus Cabin...")
-
-# Berechne Cronbachs Alpha (QUALITAET)
-items_qualitaet <- processed_data %>%
-  select(
-    Qualitaet_Verstehen_Num, 
-    Qualitaet_Struktur_Num, 
-    Qualitaet_Einfachheit_Num,
-    Qualitaet_Rechtzeitig_Num,
-    Qualitaet_Erleichterung_Num
-  )
-alpha(items_qualitaet, check.keys = TRUE)
-# raw_alpha
-# 0.64
-
-# Berechne Cronbachs Alpha (WIRKUNG)
-items_effekt <- processed_data %>%
-  select(
-    Effekt_Sicherheit_Num, 
-    Effekt_Motivation_Num, 
-    Effekt_Selbststaendig_Num, 
-    Effekt_Stress_Num, 
-    Effekt_Relevanz_Num
-  )
-alpha(items_effekt, check.keys = TRUE)
-# raw_alpha
-# 0.79 
-
-
-processed_data <- processed_data %>%
-  rowwise() %>%
-  mutate(
-    # 1. QUALITAETS-SCORE (Die "Basis")
-    # Fokus: Wie sind die Materialien beschaffen? (Struktur, Verständlichkeit)
-    Qualitaet_Score = mean(c(
-      Qualitaet_Verstehen_Num, 
-      Qualitaet_Struktur_Num, 
-      Qualitaet_Einfachheit_Num, 
-      Qualitaet_Erleichterung_Num,
-      Qualitaet_Rechtzeitig_Num
-    ), na.rm = TRUE),
-    
-    # 2. WIRKUNGS-SCORE (Der "Effekt")
-    # Fokus: Was lösen sie beim Studierenden aus? (Sicherheit, Motivation)
-    # Alpha hier ist sehr gut (0.79)!
-    Wirkungs_Score = mean(c(
-      Effekt_Sicherheit_Num, 
-      Effekt_Motivation_Num, 
-      Effekt_Selbststaendig_Num, 
-      Effekt_Stress_Num, 
-      Effekt_Relevanz_Num
-    ), na.rm = TRUE)
-  ) %>%
-  ungroup()
+# library(psych)
+# 
+# # (Äquivalent zur Titanic-Aufgabe "Extrahiert aus Cabin...")
+# 
+# # Berechne Cronbachs Alpha (QUALITAET)
+# items_qualitaet <- processed_data %>%
+#   select(
+#     Qualitaet_Verstehen_Num, 
+#     Qualitaet_Struktur_Num, 
+#     Qualitaet_Rechtzeitig_Num,
+#     Qualitaet_Erleichterung_Num
+#   )
+# alpha(items_qualitaet, check.keys = TRUE)
+# # raw_alpha
+# # 0.64
+# 
+# # Berechne Cronbachs Alpha (WIRKUNG)
+# items_effekt <- processed_data %>%
+#   select(
+#     Effekt_Sicherheit_Num, 
+#     Effekt_Motivation_Num, 
+#     Effekt_Selbststaendig_Num, 
+#     Effekt_Stress_Num, 
+#     Effekt_Relevanz_Num
+#   )
+# alpha(items_effekt, check.keys = TRUE)
+# # raw_alpha
+# # 0.79 
+# 
+# 
+# processed_data <- processed_data %>%
+#   rowwise() %>%
+#   mutate(
+#     # 1. QUALITAETS-SCORE (Die "Basis")
+#     # Fokus: Wie sind die Materialien beschaffen? (Struktur, Verständlichkeit)
+#     Qualitaet_Score = mean(c(
+#       Qualitaet_Verstehen_Num, 
+#       Qualitaet_Struktur_Num, 
+#       Qualitaet_Einfachheit_Num, 
+#       Qualitaet_Erleichterung_Num,
+#       Qualitaet_Rechtzeitig_Num
+#     ), na.rm = TRUE),
+#     
+#     # 2. WIRKUNGS-SCORE (Der "Effekt")
+#     # Fokus: Was lösen sie beim Studierenden aus? (Sicherheit, Motivation)
+#     # Alpha hier ist sehr gut (0.79)!
+#     Wirkungs_Score = mean(c(
+#       Effekt_Sicherheit_Num, 
+#       Effekt_Motivation_Num, 
+#       Effekt_Selbststaendig_Num, 
+#       Effekt_Stress_Num, 
+#       Effekt_Relevanz_Num
+#     ), na.rm = TRUE)
+#   ) %>%
+#   ungroup()
 
 # Schritt 1 (Qualität): Wie bewerten die Studierenden die Materialien objektiv? (Struktur, Einfachheit).
 # Schritt 2 (Wirkung): Was machen diese Materialien mit den Studierenden? (Motivieren sie? Nehmen sie die Angst?).
@@ -298,12 +298,12 @@ processed_data <- processed_data %>%
 # Nur die fertigen, sauberen Spalten behalten
 final_dataset <- processed_data %>%
   select(
+    Zufriedenheit_Score,
     Fakultaet,
     Abschluss,
     Fachsemester,
-    Zufriedenheit_Score,
-    Qualitaet_Score,
-    Wirkungs_Score,
+    Qualitaet_Arbeitsbelastung_Rev,
+    Effekt_Zeitaufwand_Rev,
     ends_with("_Num")
   )
 

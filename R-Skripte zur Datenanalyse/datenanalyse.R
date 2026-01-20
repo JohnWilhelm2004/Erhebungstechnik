@@ -6,7 +6,10 @@
 library(tidyverse)
 
 # 2. Daten einlesen
+# setwd("C:/Users/Annika/Documents/GitHub/Erhebungstechnik/R-Skripte zur Datenanalyse")
 source("funktionen.R") # Lädt automatisch auch die Helfer
+
+# setwd("C:/Users/Annika/Documents/ErhebTech")
 daten <- read.csv("results-survey_cleaned.csv")
 
 # Test (i): Wie hoch ist die Zufriedenheit im Schnitt?
@@ -17,7 +20,7 @@ print(calculate_metric_by_group(daten, "Zufriedenheit_Score", "Fakultaet"), n=21
 
 # Test (v): Grafik erstellen
 # Zusammenhang: Digital Score nach Fakultaet
-grafik <- plot_categorical_multivar(daten, "Fakultaet", "Digital_Score", "Abschluss")
+grafik <- plot_categorical_multivar(daten, "Fakultaet", "Abschluss")
 print(grafik)
 
 # Zusammenhang: Zufriedenheit nach Fakultaet
