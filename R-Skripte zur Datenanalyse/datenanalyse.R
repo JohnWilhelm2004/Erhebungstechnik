@@ -10,7 +10,7 @@ library(tidyverse)
 source("funktionen.R") # Lädt automatisch auch die Helfer
 
 # setwd("C:/Users/Annika/Documents/ErhebTech")
-daten <- read.csv("results-survey_cleaned.csv")
+data <- read.csv("results-survey_cleaned.csv")
 
 # Test (i): Wie hoch ist die Zufriedenheit im Schnitt?
 print(calculate_metric_stats(daten, "Zufriedenheit_Score"))
@@ -32,7 +32,7 @@ print(grafik)
 simplified <- data %>%
   mutate(
     # Fasse alles mit weniger als 5 Nennungen zu "Sonstiges" zusammen
-    Fakultaet_Gruppiert = fct_lump_min(Fakultaet, min = 4, other_level = "Sonstiges")
+    Fakultaet_Gruppiert = fct_lump_min(Fakultaet, min = 5, other_level = "Sonstiges")
   )
 
 # Kontrolle: Wie sieht die Verteilung jetzt aus?
@@ -42,34 +42,77 @@ pie(counts, main = "Verteilung der Fakultäten")
 
 pie(table(data$Abschluss), main = "Verteilung Bachelor/Master")
 
+barplot(table(data$Fachsemester))
+
+simplified <- data %>%
+  mutate(
+    # Fasse alles mit weniger als 5 Nennungen zu "Sonstiges" zusammen
+    Fakultaet_Gruppiert = fct_lump_min(Fakultaet, min = 5, other_level = "Sonstiges")
+  )
+
+barplot(table(data$Fachsemester))
+
 #####
-# ==============================================================================
-# Grafik: Der Haupteffekt
-# Zusammenhang zwischen Materialqualität und Zufriedenheit
-# ==============================================================================
+# Bibliotheken laden
+if(!require(tidyverse)) install.packages("tidyverse")
+if(!require(corrplot)) install.packages("corrplot")
+if(!require(fastDummies)) install.packages("fastDummies")
+library(tidyverse)
+library(corrplot)
+library(fastDummies)
 
-# Plot erstellen
-plot_main <- ggplot(daten, aes(x = Qualitaet_Score, y = Zufriedenheit_Score)) +
-  # 1. Die Punkte (mit leichtem "Jitter", damit sie nicht übereinander liegen)
-  geom_jitter(aes(color = Fakultaet), width = 0.1, height = 0.1, alpha = 0.7, size = 3) +
-  
-  # 2. Die Regressionsgerade (Lineares Modell "lm")
-  geom_smooth(method = "lm", color = "darkblue", fill = "lightblue") +
-  
-  # 3. Beschriftung und Design
-  labs(
-    title = "Einfluss der Lernmaterialien auf die Zufriedenheit",
-    subtitle = paste("Korrelation: r =", round(cor(processed_data$Qualitaet_Score, data$Zufriedenheit_Score, use="complete.obs"), 2)),
-    x = "Materialqualität",
-    y = "Zufriedenheit mit Lernerfolg",
-    color = "Fakultät"
-  ) +
-  theme_minimal() +
-  scale_color_viridis_d() # Schöne Farben für Publikationen
+# 1. Daten laden
+df <- read.csv("results-survey_cleaned.csv")
 
-# Anzeigen
-print(plot_main)
+# 2. Daten vorbereiten
+# Wir wandeln alles in Zahlen um. 
+# WICHTIG: Wir entfernen Spalten, die nur einen einzigen Wert haben (Varianz = 0),
+# da diese zu Fehlern in der Korrelation führen.
+df_numeric <- df %>%
+  dummy_cols(select_columns = c("Fakultaet", "Abschluss"), 
+             remove_first_dummy = FALSE, 
+             remove_selected_columns = TRUE) %>%
+  select_if(is.numeric) %>%
+  select(where(~ var(., na.rm = TRUE) > 0)) # Entfernt Spalten ohne Variation (Konstante)
 
-# Speichern für den Bericht
-ggsave("plots/scatter_material_zufriedenheit.png", plot_main, width = 8, height = 6)
+# 3. Korrelationsmatrix berechnen
+cor_matrix <- cor(df_numeric, use = "pairwise.complete.obs")
+
+# 4. FEHLERBEHEBUNG: NAs durch 0 ersetzen
+# Das ist der entscheidende Schritt, der Ihren Fehler verhindert.
+# Wenn eine Korrelation nicht berechnet werden konnte, setzen wir sie auf 0 (kein Zusammenhang).
+cor_matrix[is.na(cor_matrix)] <- 0
+
+# 5. Filtern: Nur relevante Variablen behalten
+threshold <- 0.4
+# Diagonale temporär auf 0 setzen, damit sie nicht als "starke Korrelation" zählt
+diag_backup <- diag(cor_matrix)
+diag(cor_matrix) <- 0
+
+# Finde Zeilen, die mindestens eine Korrelation > 0.4 haben
+# na.rm = TRUE sorgt dafür, dass evtl. verbliebene Fehler ignoriert werden
+relevant_indices <- apply(abs(cor_matrix), 1, max, na.rm = TRUE) > threshold
+
+# Matrix reduzieren
+cor_matrix_filtered <- cor_matrix[relevant_indices, relevant_indices]
+
+# Diagonale wiederherstellen (auf 1 setzen)
+diag(cor_matrix_filtered) <- 1
+
+# 6. Plotten
+# Falls nach dem Filtern nichts übrig bleibt, geben wir eine Warnung aus
+if(nrow(cor_matrix_filtered) > 1) {
+  corrplot(cor_matrix_filtered, 
+           method = "color", 
+           type = "upper", 
+           order = "hclust", 
+           addCoef.col = "black", 
+           tl.col = "black", 
+           tl.cex = 0.6, 
+           number.cex = 0.5, 
+           title = "Relevante Korrelationen (> 0.4)", 
+           mar = c(0,0,2,0))
+} else {
+  print("Keine starken Korrelationen über dem Schwellenwert gefunden.")
+}
 
