@@ -2,10 +2,36 @@
 title: "Bericht_Erhebungstechnik"
 author: "John Wilhelm, Lukas König, Annika Homm"
 date: "2026-01-20"
-output: html_document
+output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+# 1. Einleitung
+
+Die Digitalisierung hat das Studium an der Universität in den letzten Jahren fundamental verändert. Anstatt das Besuchen der Vorlesungen, bearbeiten von wöchentlichen Übungsblättern und das durchackern des offiziellen Skriptes steht Studierenden heute ein unüberschaubares Angebot an Lernressourcen zur Verfügung welche alle einen Weg zum Lernerfolg bieten. YouTube-Videos welche komplexe Themen in unter 10 Minuten erklären oder KI-Tools, welche Aufgaben in Sekundenschnelle gelöst werden. Die Digitalisierung bietet Freiheit und Effizienz wie noch nie zuvor. Doch dabei stellt sich die Frage ob diese Freiheit auch zu einem genauso tieferen Verständnis führt wie wenn man sich Intensiv mit den Themen beschäftigt.\
+Der folgende Bericht verfolgt das Ziel zu untersuchen wie Studierende der Technischen Universität Dortmund die verfügbaren Lernressourcen nutzen und ob eher traditionelle Mittel ein tieferes Verständnis und Zufriedenheit bringen oder die Mittel der Digitalisierung. Dabei werden nicht nur die Nutzungshäufigkeiten der Lernmaterialien betrachtet, sondern auch, welche Eigenschaften, wie Verfügbarkeit, Verständlichkeit und Zufriedenheit diese bieten. Um mögliche Zusammenhänge differenzierter zu betrachten, werden individuelle Studienmerkmale, wie Fachsemester, Fakuktätzugehörigkeit und Abschluss des jeweiligen Studienganges erhoben.
+
+## 1.1. Forschungsfragen
+
+Im Zentrum fokussiert sich der Bericht auf die 2 folgenden Leitfragen.
+
+1.  Unterstützt der Wunsch nach selbstbestimmten Lernen durch Künstliche Intelligenz und YouTube-Videos wirklich den Lernerfolg und führt dieses zu besseren akademischen Ergebnissen oder ist die traditionelle Führung durch universitäre Materialen wie Skripte und Übungen noch immer der sicherste Weg für das bestehen der Prüfungen.
+2.  Gibt uns die Verfügbarkeit der Digitalen Hilfsmittel die Zufriedenheit wie wir sie brauchen? Um dies zu beantworten vergleichen wir Studierende mit einer hohen Nutzung an digitalen Hilfsmittel mit jenen, welche stärker auf klassische Medien setzen um herauszufinden, ob die Effizienz der Digitalisierung den Stress reduziert oder durch Überflutung sogar fördert.
+
+## 1.2. Motivation und Zielsetzung
+
+Durch eigene Erfahrung wissen wir das es manchmal einfach bequemer ist schnell und Effizient Aufgaben zu bearbeiten, jedoch kann dies auch schnell zu einer Überforderung führen. Zudem bleiben die Themen eher im Kurzzeitgedächtnis zu hängen wenn man sich nicht intensiv mit diesen beschäftigt. Was auf den ersten Blick hilfreich wirkt kann aber auch schnell das Gegenteil bewirken weshalb dieser Bericht diese Unsicherheit Studierenden nehmen soll. Ziel ist es evidenzbasierte Empfehlungen aussprechen zu können und zu zeigen, welche Strategien sich in der Praxis besser durchsetzen als andere.
+
+# 2. Erhebungsinstrument
+
+## 2.1 Wahl des Erhebungsinstruments
+
+Um die Leitfragen zu beantworten, wurde ein Online-Fragebogen genutzt, welcher sich gut eignet, um subjektive Einschätzungen zu erfassen. Fragebögen stellen eine der gängigsten Methoden dar, um Erfahrungen der Befragten zu erheben, während zeitgleich die Erfassung von Nutzungshäufigkeiten der verschiedenen Lernressourcen in sauberen und einheitlichen ermöglicht wird. Zudem bekommen alle Befragten die selben Fragen und somit auch identischen Skalen, wodurch Antworten vergleichbar sind und Unterschiede sich deskriptiv auswerten lassen. Interviews wären eine mögliche Alternative, jedoch sind diese Zeit intensiver und erschweren das Vergleichen der Auswertungen.
+
+## 2.2 Aufbau des Fragebogens
+
+Der Fragebogen ist thematisch unterteilt worden, damit die Auswertung strukturierter stattfinden kann. Zu Beginn wird die Angkerfrage gestellt, welche direkt eine ehrliche Reflektion des Befragten über deren Studienzufriedenheit fordert. Um Unterschiede in den Fachrichtungen berücksichtigen zu können werden studienbezogene Angaben erhoben (u.a. Fakultät, Fachsemester und angestrebter Abschluss). Anschließend werden mehrere Itemblöcke in Form von Likert-Skalen verwendet, um die zentralen Fragen der zu erfassen. Diese beinhalten Fragen zur Einstellung gegenüber der Struktur und dem Übungsbetrieb der Kurse, wie die Meinung zu verpflichtenden Übungen. Zudem werden mit einer Matrixfrage die Nutzungshäufigkeiten der Materialen, welche sich aus Skripte, eigenen Mitschriften, Videos, Übungsaufgaben mit Musterlösungen, Altklausuren, Fachbüchern, Online-Videos und Chatbots zusammenstellen, erhoben. Danach wird die Qualitäts- und Wirkempfindung dieser Materialien erfasst, hinsichtlich Verständlichkeit, Struktur, rechtzeitiger Verfügbarkeit, Lernunterstützung und Lernaufwand. Im Anschluss werden wieder per Likert-Skalen prüfungsbezogene Aspekte wie die Sicherheit zum reichlichen Verständnis der Inhalte in hinsicht auf die nächste Prüfung. Abschließen gibt es die Möglichkeit in einem Textfeld eine Rückmeldung zur Umfrage zu geben.\
+Die Fragen können meistens auf einer fünfstufigen Antwortskala beantwortet werden. Dabei konnte man von zwischen "stimme überhaupt nicht zu" bis zu "stimme voll und ganz zu" bei Zustimmungsaussagen und zwischen "gar nicht" bis "immer" bei Nutzungshäufigkeiten wählen. Die Variablen Fakultät und Abschluss sind nominal skaliert, dass Fachsemester wird als metrische Angabe erhoben und die Likert-Items sind ordninal skaliert.
