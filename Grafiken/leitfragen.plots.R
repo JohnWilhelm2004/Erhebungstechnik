@@ -259,10 +259,14 @@ plot.5.data <- survey.data %>%
   
   #Formen die Matrix zuerst in eine Tabelle und dann in einen Data Frame um 
   as.table() %>%
-  as.data.frame()
+  as.data.frame() %>%
   
+  filter(Var1 != "Zufriedenheit_Score", Var2 == "Zufriedenheit_Score") %>%
+  mutate(
+    Faktor = str_remove_all("Qualiteat_|Effekt_|_Num|_Rev"),
+  ) %>%
+  mutate(Faktor = fct_reorder(Faktor, Freq)) %>%
   
-  
-  
+  print(plot.5.data)
 
-
+         
