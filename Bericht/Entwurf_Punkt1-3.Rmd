@@ -1,0 +1,100 @@
+---
+title: "Entwurf Punkt 1-3"
+author: "John Wilhelm, Lukas König, Annika Homm"
+date: "2026-01-23"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 1. Einleitung
+
+Die Digitalisierung hat den Studienalltag an Universitäten in den vergangenen Jahren grundlegend verändert. Anstelle des reinen Besuchs von Vorlesungen, der Bearbeitung wöchentlicher Übungsblätter und der intensiven Auseinandersetzung mit offiziellen Skripten, steht Studierenden heute ein umfangreiches Angebot an Lernressourcen zur Verfügung. Diese Vielfalt eröffnet unterschiedliche Wege zum Lernerfolg: von Video-Tutorials, die komplexe Sachverhalte in wenigen Minuten erläutern, bis hin zu KI-gestützten Tools, die Aufgaben in Sekundenschnelle lösen. Die Digitalisierung ermöglicht somit ein Maß an Flexibilität und Effizienz, das zuvor nicht existierte. Es stellt sich jedoch die Frage, ob diese neuen Freiheiten zu einem vergleichbar tiefen Verständnis führen wie die intensive, traditionelle Auseinandersetzung mit den Inhalten.
+
+Der vorliegende Bericht untersucht, wie Studierende der Technischen Universität Dortmund die verfügbaren Lernressourcen nutzen. Dabei wird analysiert, ob traditionelle Lehrmittel oder digitale Alternativen eher zu einem tieferen Verständnis und höherer Studienzufriedenheit beitragen. Neben der Nutzungshäufigkeit werden qualitative Eigenschaften der Materialien wie Verfügbarkeit, Verständlichkeit und Zufriedenheit betrachtet. Um Zusammenhänge differenziert bewerten zu können, werden zudem individuelle Studienmerkmale wie Fachsemester, Fakultätszugehörigkeit und angestrebter Abschluss in die Analyse einbezogen.
+
+### 1.1. Forschungsfragen
+
+Der Bericht fokussiert sich auf die folgenden zwei zentralen Leitfragen:
+
+1.  Führt das selbstbestimmte Lernen mittels Künstlicher Intelligenz und Video-Tutorials tatsächlich zu einem verbesserten Lernerfolg und besseren akademischen Ergebnissen, oder stellt die traditionelle Struktur durch universitäre Materialien (Skripte, Übungen) weiterhin den verlässlicheren Weg zum Bestehen der Prüfungen dar?
+
+2.  Korreliert die Verfügbarkeit digitaler Hilfsmittel mit der studentischen Zufriedenheit? Hierbei wird verglichen, ob Studierende mit hoher Nutzung digitaler Ressourcen eine höhere Zufriedenheit aufweisen als jene, die verstärkt klassische Medien nutzen. Ziel ist es zu klären, ob die Effizienz der Digitalisierung Stress reduziert oder durch eine Informationsüberflutung möglicherweise fördert.
+
+### 1.2. Motivation und Zielsetzung
+
+Aus studentischer Erfahrung ist bekannt, dass die effiziente und schnelle Bearbeitung von Aufgaben mittels digitaler Hilfen oft komfortabler erscheint, jedoch auch das Risiko der Überforderung bergen kann. Zudem besteht die Gefahr, dass Inhalte lediglich im Kurzzeitgedächtnis verbleiben, wenn eine intensive Auseinandersetzung ausbleibt. Was initial hilfreich wirkt, kann langfristig kontraproduktiv sein. Dieser Bericht soll Studierenden diese Unsicherheit nehmen, indem evidenzbasierte Empfehlungen ausgesprochen werden. Es soll aufgezeigt werden, welche Lernstrategien sich in der akademischen Praxis als nachhaltig erweisen.
+
+## 2. Erhebungsinstrument
+
+### 2.1 Wahl des Erhebungsinstruments
+
+Zur Beantwortung der Forschungsfragen wurde ein Online-Fragebogen gewählt. Dieses Instrument eignet sich gut zur Erfassung subjektiver Einschätzungen sowie zur quantitativen Erhebung von Nutzungshäufigkeiten verschiedener Lernressourcen in standardisierter Form. Da alle Befragten identische Fragen und Skalen erhalten, sind die Antworten vergleichbar und lassen sich deskriptiv auswerten. Interviews wurden als Alternative verworfen, da diese zeitintensiver in der Durchführung sind und die quantitative Vergleichbarkeit der Ergebnisse erschweren würden.
+
+### 2.2 Aufbau des Fragebogens
+
+Der Fragebogen ist thematisch gegliedert, um eine strukturierte Auswertung zu gewährleisten. Zu Beginn fordert eine Ankerfrage die Befragten zu einer ehrlichen Reflexion ihrer allgemeinen Studienzufriedenheit auf. Zur Berücksichtigung fachspezifischer Unterschiede werden anschließend studienbezogene Daten (u. a. Fakultät, Fachsemester, angestrebter Abschluss) erhoben.
+
+Im Hauptteil kommen Likert-Skalen zum Einsatz, um zentrale Aspekte zu erfassen. Dies umfasst Fragen zur Einstellung gegenüber der Kursstruktur und dem Übungsbetrieb (z. B. Meinung zu Anwesenheitspflichten). Eine Matrixfrage erhebt die Nutzungshäufigkeiten verschiedener Materialien: Skripte, eigene Mitschriften, Videoaufzeichnungen, Übungsaufgaben mit Musterlösungen, Altklausuren, Fachbücher, Online-Videos und KI-Chatbots. Darauf aufbauend wird die subjektive Wahrnehmung der Qualität und Wirkung dieser Materialien abgefragt (Verständlichkeit, Struktur, rechtzeitige Verfügbarkeit, Lernunterstützung, Lernaufwand). Abschließend werden prüfungsbezogene Aspekte, wie die Sicherheit hinsichtlich des Verständnisses für anstehende Klausuren, mittels Likert-Skalen evaluiert. Ein Freitextfeld bietet am Ende die Möglichkeit für individuelles Feedback.
+
+Die meisten Fragen werden auf einer fünfstufigen Skala beantwortet (Zustimmung: „stimme überhaupt nicht zu“ bis „stimme voll und ganz zu“; Häufigkeit: „gar nicht“ bis „immer“). Die Variablen Fakultät und Abschluss sind nominal skaliert, das Fachsemester metrisch, und die Likert-Items ordinal.
+
+### 2.3. Durchführung
+
+Die Datenerhebung erfolgte als Online-Umfrage mittels der Software *LimeSurvey*. Der Zugang wurde über einen QR-Code ermöglicht, wobei das Ausfüllen ohne Anmeldung und ohne Erfassung personenbezogener Daten erfolgte. Die Distribution des Links erfolgte über WhatsApp-Gruppen sowie durch direkte Ansprache auf dem Campus der Technischen Universität Dortmund. Die Teilnahme war freiwillig und richtete sich an Studierende verschiedener Semester und Fachrichtungen, mit einem Fokus auf MINT-Fächer (Mathematik, Informatik, Naturwissenschaften, Technik).
+
+### 2.4. Bias und Einschränkungen der Rekrutierung
+
+Aufgrund der Rekrutierungsmethode (direkte Ansprache, Messenger-Gruppen) sind methodische Einschränkungen zu beachten. Da primär Studierende erreicht wurden, die zum Erhebungszeitpunkt vor Ort waren, sind Personen, die selten am Campus sind oder rein digital studieren, unterrepräsentiert. Dies führt zu einer Selektionsverzerrung (*Selection Bias*). Zudem nahmen nur Studierende teil, die das notwendige Interesse und die Zeit aufbrachten (*Self-Selection Bias*). Es zeigt sich zudem eine ungleichmäßige Verteilung hinsichtlich der Fakultäten, wobei Studierende der Statistik überrepräsentiert sind. Diese Verzerrungen schränken die Generalisierbarkeit der Ergebnisse ein; die Interpretationen gelten primär für die erreichte Stichprobe.
+
+### 2.5. Stichprobe und Datensatz
+
+#### 2.5.1 Erhebung
+
+Die Ergebnisse basieren auf einer standardisierten Online-Erhebung via *LimeSurvey*. Teilnehmer wurden über die Anonymität und Freiwilligkeit der Studie aufgeklärt. Die Konzeption und Auswertung des Fragebogens erfolgte im Rahmen der Veranstaltung „Erhebungstechnik“ durch eine Gruppe von Studierenden, mit dem Ziel, traditionelle und digitale Lernmethoden zu vergleichen.
+
+#### 2.5.2 Stichprobe
+
+Insgesamt nahmen 128 Studierende an der Umfrage teil. Nach der Datenbereinigung konnten die Datensätze von 83 Personen in die Auswertung einbezogen werden. Da die Umfrage vorwiegend im Umfeld der Fakultät Statistik stattfand, liegt eine Gelegenheitsstichprobe vor. Aufgrund möglicher Selektionsverzerrungen ist zu beachten, dass die Ergebnisse nicht repräsentativ für die Grundgesamtheit aller Studierenden sind, sondern lediglich Tendenzen innerhalb der Stichprobe aufzeigen.
+
+#### 2.5.3 Datensatz und Arbeitsgrundlage
+
+Basis der Auswertung ist der von *LimeSurvey* exportierte CSV-Datensatz. Dieser wurde bereinigt und für die Analyse aufbereitet (Zusammenführung und Umbenennung von Variablen, Konvertierung in numerische Skalen). Der finale Datensatz umfasst 31 Variablen, welche die Themenblöcke Studienmerkmale, Lernerfolg, Einstellungen, Nutzung, Qualitätsurteile sowie Wirkung abbilden. Zur besseren Übersicht wurden Variablenbezeichnungen teils verkürzt.
+
+#### 2.5.4 Variablen und Skalenniveaus
+
+Der Datensatz enthält kategoriale Studienmerkmale sowie überwiegend ordinal skalierte Likert-Items in numerischer Kodierung:
+
+-   **Nominal (2 Variablen):** Fakultät, Abschluss
+
+-   **Metrisch (1 Variable):** Fachsemester
+
+-   **Ordinal (28 Variablen):** U. a. Zufriedenheitsscore, Einstellungen zur Kursstruktur, Nutzungshäufigkeiten (Skripte, Chatbots, etc.), Qualitätsurteile und wahrgenommene Effekte (Motivation, Stress, Zeitaufwand, Prüfungsrelevanz).
+
+-   *Anmerkung:* Das Freitextfeld für Feedback ist nicht Teil des bereinigten numerischen Datensatzes.
+
+#### 2.5.5 Datenaufbereitung und fehlende Werte
+
+Zur Sicherstellung der Datenqualität wurden folgende Schritte durchgeführt:
+
+-   **Bereinigung:** Kategoriale Merkmale wurden als nominale Faktoren, Skalenwerte als numerische Variablen gespeichert.
+
+-   **Umskalierung:** Likert-Items wurden auf eine Wertebereich von 1 bis 5 kodiert (1 = niedrigste Ausprägung, 5 = höchste Ausprägung), um die Vergleichbarkeit zu gewährleisten.
+
+-   **Fehlende Werte (NAs):** Unbeantwortete Items wurden als `NA` kodiert. Insgesamt enthält der Datensatz 107 fehlende Werte. 53 Personen haben den Fragebogen vollständig ausgefüllt. Im Durchschnitt weist jeder Teilnehmer 1,26 fehlende Werte auf.
+
+Die 107 fehlenden Werte verteilen sich wie folgt:
+
+-   Studienmerkmale (3 Variablen): 5 NA
+
+-   Lernerfolg (2 Variablen): 2 NA
+
+-   Einstellungen (5 Variablen): 12 NA
+
+-   Nutzung Lernmaterialien (9 Variablen): 46 NA
+
+-   Qualität (5 Variablen): 10 NA
+
+-   Effekte (7 Variablen): 32 NA
