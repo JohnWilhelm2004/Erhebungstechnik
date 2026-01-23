@@ -245,6 +245,57 @@ ggplot(plot.4.data, aes(x = Qualitaet_Verstehen_Num, fill = Gruppe, color = Grup
     axis.text.y = element_text(color = "black", size = 11) #Achsenbeschriftung einfärben und Größe Richtig bestimmen
   )
 
+#Frage4.5/Plot4.5 - Mit welchen Effekten Korrelieren die Arbeitsmaterialien
+#Es fehlt zwischen PLot 4 und 5 für die Argumentation unserer These der Übergang deswegen
+#gucken wir uns jetzt an wie die Materialien mit den Effekten zusammenhängen die für die Zufriedenheit sorgen können
+
+plot.4.5.data <- survey.data %>%
+  #Wir wählen wieder unsere gebrauchten Eigenschaften aus, 
+  #wir nehmen nicht alle Effekte weil unsere Plots sonst zu unübersichtlich werden
+  select(starts_with("Nutzung_"),
+         Effekt_Sicherheit_Num,
+         Effekt_Stress_Num,
+         Effekt_Zeitaufwand_Rev,
+         Qualitaet_Verstehen_Num) %>%
+  
+  #Wir entfernen alle NAs 
+  drop_na() %>%
+  
+  #Wir berechnen die Korrelation zwischen all diesen Werten
+  cor() %>%
+  
+  #Hier wieder unser trick aus Plot 4 um die Daten ins richtige Format zu rücken
+  as.table() %>%
+  as.data.frame() %>%
+  
+  #Jetzt filtern wir die Korrelationen die wir tatsächlich haben wollen
+  filter(str_detect(Var1, "Nutzung"), !str_detect(Var2, "Nutzung")) %>%
+  
+  #Wir machen unsere Namen für die Plots wieder schön 
+  mutate(
+    Tool = str_remove_all(Var1, "Nuztung_|_Num"),
+    
+    #Wir entfernen auch noch andere Überbleibsel 
+    Effekt = str_remove_all(Var2, "Effekt_|Qualitaet_|Nutzung_|_Num|_Rev")
+  )
+
+ggplot(plot.4.5.data, aes (x = Freq, y = reorder(Tool, Freq), fill = Tool)) +
+  geom_col() +
+  facet_wrap(~Effekt, scales = "free_x") +
+  scale_fill_viridis_d(option = "mako", begin = 0.4, end = 0.8) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "grey70") +
+  labs(
+    title = "Wie Korrelieren Arbeitsmaterialien mit den Effekten",
+    x = "Stärke des Zusammenhangs (GGrößer ist besser)",
+    y = NULL
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "none",
+    panel.grid.minor = element_blank(),
+    strip.text = element_text(face = "bold", size = 11)
+  )
+
 #Plot/Frage 5 - Wie Korrelieren Qualitäts und Effekteigenschaften mit der Zufriedenheit
 plot.5.data <- survey.data %>%
   
@@ -263,10 +314,10 @@ plot.5.data <- survey.data %>%
   
   filter(Var1 != "Zufriedenheit_Score", Var2 == "Zufriedenheit_Score") %>%
   mutate(
-    Faktor = str_remove_all("Qualiteat_|Effekt_|_Num|_Rev"),
+    Faktor = str_remove_all("Qualitaet_|Effekt_|_Num|_Rev"),
   ) %>%
   mutate(Faktor = fct_reorder(Faktor, Freq)) %>%
   
   print(plot.5.data)
 
-         
+#Plot 6 Große aufbereitete Heatmap aller Korrelationszusammenhänge vernünftig Sortiert und Modern
