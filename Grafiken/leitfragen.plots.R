@@ -280,7 +280,10 @@ plot.4.5.data <- survey.data %>%
   )
 
 ggplot(plot.4.5.data, aes (x = Freq, y = reorder(Tool, Freq), fill = Tool)) +
+  #Hiermit erstellen wir unsere Balken
   geom_col() +
+  
+  #Das hier sorgt dafür das wir wieder viele
   facet_wrap(~Effekt, scales = "free_x") +
   scale_fill_viridis_d(option = "mako", begin = 0.4, end = 0.8) +
   geom_vline(xintercept = 0, linetype = "dashed", color = "grey70") +
@@ -297,7 +300,7 @@ ggplot(plot.4.5.data, aes (x = Freq, y = reorder(Tool, Freq), fill = Tool)) +
   )
 
 #Plot/Frage 5 - Wie Korrelieren Qualitäts und Effekteigenschaften mit der Zufriedenheit
-plot.5.data <- survey.data %>%
+plot.5.data.cor <- survey.data %>%
   
   #Wir suchen alle Eigenschaften raus die mit der Zufriedenheit interessant korrelieren könnten
   select(starts_with("Qualitaet_"), starts_with("Effekt_"), Zufriedenheit_Score) %>%
@@ -312,12 +315,117 @@ plot.5.data <- survey.data %>%
   as.table() %>%
   as.data.frame() %>%
   
+  #Wir filtern alle Korrelationen heraus so dass nurnoch die wichtigen Dinge übrig sind 
   filter(Var1 != "Zufriedenheit_Score", Var2 == "Zufriedenheit_Score") %>%
-  mutate(
-    Faktor = str_remove_all("Qualitaet_|Effekt_|_Num|_Rev"),
-  ) %>%
-  mutate(Faktor = fct_reorder(Faktor, Freq)) %>%
   
-  print(plot.5.data)
+  mutate(
+    Faktor = str_remove_all(Var1, "Qualitaet_|Effekt_|_Num|_Rev"),
+  ) %>%
+  
+  mutate(Faktor = fct_reorder(Faktor, Freq)) 
 
-#Plot 6 Große aufbereitete Heatmap aller Korrelationszusammenhänge vernünftig Sortiert und Modern
+#Da wir in der ersten Transformation die Daten schon umgebaut haben mit correlationen
+#holen wir uns jetzt noch die anderen Sachen die wir brauchen für den finalen Tornado Plot 
+
+plot.5.data.cor.2 <- survey.data %>%
+  #Wir wählen wieder alle Spalten aus die wir brauchen 
+  select(starts_with("Nutzung_"),
+         Effekt_Sicherheit_Num,
+         Effekt_Stress_Num,
+         Effekt_Zeitaufwand_Rev,
+         Qualitaet_Verstehen_Num) %>%
+  #Wir entfernen alle na werte damit wir später keine Probleme bekommen
+  drop_na() %>%
+  
+  #Wir berechnen von diesen Aspekten die Korrelationen
+  cor() %>%
+  
+  #Wir wenden wieder unseren Umformatierungstrick an
+  as.table() %>%
+  as.data.frame() %>%
+  filter(
+     str_detect(Var1, "Nutzung"),
+    !str_detect(Var2, "Nutzung")
+  ) %>%
+  mutate(
+    Tool = str_remove_all(Var1, "Nutzung_|_Num"),
+    Effekt = str_remove_all(Var2, "Effekt_|Qualitaet_|_Num|_Rev")
+  )
+
+ggplot(plot.5.data.cor.2, aes(x = Freq, y = reorder(Effekt, Freq), fill = Effekt)) +
+  geom_col() +
+  facet_wrap(~Tool, ncol = 3) +
+  scale_fill_viridis_d(option = "mako", begin = 0.3, end = 0.8) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "grey70") +
+  labs(
+    title = "Steckbrief der Werkzeuge",
+    x = "Stärke des Zusammenhangs",
+    y = NULL
+  ) +
+  theme_minimal(base_size = 12)
+
+
+
+#DAS HIER IST BIS JETZT NOCH EIN KI INHALT, WIRD SPÄTER GEFIXED
+# ==============================================================================
+# PLOT 6: REFLEKTION - DIE KOMPLETTE LANDSCHAFT (All In)
+# ==============================================================================
+
+# 1. Datenvorbereitung: WIR NEHMEN ALLES
+plot.6.data <- survey.data %>%
+  # Wähle automatisch JEDE Spalte, die Zahlen enthält
+  select(where(is.numeric)) %>%
+  
+  # Optional: Falls du eine ID-Spalte oder einen Index ("X") hast, weg damit:
+  # select(-contains("ID"), -any_of("X")) %>% 
+  
+  drop_na()
+
+# WICHTIG: Wir speichern die Original-Reihenfolge der Spalten
+# (Damit R sie gleich nicht alphabetisch sortiert)
+original_order <- names(plot.6.data)
+
+# 2. Korrelation berechnen
+plot.6.cor <- plot.6.data %>%
+  cor() %>%
+  as.table() %>%
+  as.data.frame()
+
+# 3. Die Reihenfolge erzwingen
+# Wir sagen dem Plot: "Benutze genau die Liste 'original_order' zum Sortieren"
+plot.6.cor <- plot.6.cor %>%
+  mutate(
+    Var1 = factor(Var1, levels = original_order),
+    # Für die y-Achse drehen wir die Reihenfolge oft um (rev), 
+    # damit die Diagonale wie gewohnt von links oben nach rechts unten läuft
+    # oder wir lassen es gleich, je nach Geschmack. Hier: Gleich wie CSV.
+    Var2 = factor(Var2, levels = rev(original_order)) 
+  )
+
+# 4. Der große Heatmap-Plot
+ggplot(plot.6.cor, aes(x = Var1, y = Var2, fill = Freq)) +
+  geom_tile(color = "white", lwd = 0.2) + # Feine weiße Linien
+  
+  # Farben: Volles Spektrum von -1 (Rot/Blau) bis +1 (Hell/Gelb)
+  scale_fill_viridis_c(option = "mako", direction = 1, limits = c(-1, 1)) +
+  
+  # Achsenbeschriftung säubern (wir entfernen _Num etc. für Lesbarkeit)
+  scale_x_discrete(labels = function(x) str_remove_all(x, "Nutzung_|Qualitaet_|Effekt_|_Num|_Score|_Rev")) +
+  scale_y_discrete(labels = function(x) str_remove_all(x, "Nutzung_|Qualitaet_|Effekt_|_Num|_Score|_Rev")) +
+  
+  labs(
+    title = "Gesamt-Matrix: Alle Korrelationen",
+    subtitle = "Übersicht aller gemessenen Variablen im Kurs",
+    x = NULL,
+    y = NULL,
+    fill = "Korrelation"
+  ) +
+  theme_minimal(base_size = 10) +
+  theme(
+    # Text auf x-Achse senkrecht stellen, sonst überlappt alles bei vielen Variablen
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 8),
+    axis.text.y = element_text(size = 8),
+    panel.grid = element_blank(),
+    legend.position = "right"
+  ) +
+  coord_fixed() # Quadratische Kacheln
