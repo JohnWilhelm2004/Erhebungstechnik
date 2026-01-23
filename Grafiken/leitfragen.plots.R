@@ -107,7 +107,7 @@ ggplot(plot.2.data) +
        x = "Korrelationsstärke (r)\n ← Spart Zeit/ Wenig Verständnis | Kostet Zeit / Hohes Verständnis →",
        y = NULL,
        color = "Gemessener Effekt"
-       ) +
+  ) +
   #Wir editieren unser Theme minimal etwas damit es unseren Anforderungen entspricht
   theme_minimal(base_size = 12) +
   theme(
@@ -182,18 +182,30 @@ ggplot(plot.3.data, aes(x = Tool, y = Note, color = Tool)) +
 
 #Frage/Plot 4 - Macht es einen unterschied für die Note, ob ich ein Tool viel oder wenig nutze?
 
-#Wir erstellen hierfür einen Violin Plot, ursprünglich wollte ich nen einfachen 
+#Wir erstellen hierfür einen Density Plot, ursprünglich wollte ich nen einfachen 
 #Boxplot verwenden aber das war mir ein wenig zu langweilig
 
 #Wir starten wie immer mit unserer datenumformung
-plt.4.data <- survey.data %>%
+plot.4.data <- survey.data %>%
   
   #Wir wählen die Zeilen aus die wir brauchen das Verständnis und Nutzung 
   #von KI und Youtube im Vergleich mit Skript und Büchern
-  select(Qualitaet_Verstehen_Num, Nutzung_Skript_Num, Nutzung_KI_Num, Nutzung_YouTube_Num) %>%
+  select(Qualitaet_Verstehen_Num,
+         Nutzung_Skript_Num,
+         Nutzung_KI_Num,
+         Nutzung_YouTube_Num,
+         Nutzung_Buecher_Num) %>%
   
   #Wir drehen die Daten wieder für den ggplot
-  mutate(Tool = str_remove_all(, "Nuztung_|_Num")) %>%
+  pivot_longer(cols = starts_with("Nutzung"),
+               names_to = "Tool",
+               values_to = "Haeufigkeit") %>%
+  
+  #Wir machen unseren Datensatz wieder für den Plot "sauber"
+  mutate(Tool = str_remove_all(Tool, "Nutzung_|_Num")) %>%
+  
+  #Wir entfernen alle NAs
+  drop_na(Haeufigkeit) %>%
   
   #Jetzt unterscheiden wir die Studenten in 2 Gruppen
   mutate(Gruppe = if_else(Haeufigkeit >= 4,
@@ -201,5 +213,56 @@ plt.4.data <- survey.data %>%
                           "Wenig Nutzer")) %>%
   
   #Wir filtern Tool nur nach den Tools die wir tatsächlich haben wollen in unserem Violinen Plot
-  filter(Tool %in% c("Skript", "KI", "Youtube"))
+  filter(Tool %in% c("Skript", "KI", "YouTube", "Buecher"))
+
+#Jetzt erstellen wir unseren density Plot 
+ggplot(plot.4.data, aes(x = Qualitaet_Verstehen_Num, fill = Gruppe, color = Gruppe)) +
   
+  #Wir erstellen unseren density Plot mit alpha = 0.4 damit die Hügel transperent sind 
+  geom_density(alpha = 0.4) +
+  
+  #Dieser Befehl sorgt dafür das wir sozusagen mini Plots für jedes der Materialien erstellen 
+  facet_wrap(~Tool) +
+  
+  #Hier nehmen wir unsere Standard Farbpalette 
+  scale_fill_viridis_d(option = "mako", begin = 0.4, end = 0.8) +
+  scale_color_viridis_d(option = "mako", begin = 0.4, end = 0.8) +
+  
+  #Wir erstellen Überschrift und Achsenbeschriftungen für die Verständnis
+  labs(title = "Viel Nutzer vs. Wenig Nutzer",
+       subtitle = "Verteilung des Verstädnis unter Hohen und Niedrigen Nutzergruppen im Vergleich",
+       x = "Verständnis (Von 1 bis 5)",
+       y = "Dichte",
+       fill = "Gruppe"
+  ) +
+  
+  #Wir editieren unser Theme minimal etwas damit es unseren Anforderungen entspricht
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "top", #Sorgt dafür das die Legende oben ist 
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(face = "bold", size = 16), #Überschrift Makieren und Richtige Größe einstellen 
+    axis.text.y = element_text(color = "black", size = 11) #Achsenbeschriftung einfärben und Größe Richtig bestimmen
+  )
+
+#Plot/Frage 5 - Wie Korrelieren Qualitäts und Effekteigenschaften mit der Zufriedenheit
+plot.5.data <- survey.data %>%
+  
+  #Wir suchen alle Eigenschaften raus die mit der Zufriedenheit interessant korrelieren könnten
+  select(starts_with("Qualitaet_"), starts_with("Effekt_"), Zufriedenheit_Score) %>%
+  
+  #Wir entfernen alle Fehlenden Werte für den Plot 
+  drop_na() %>%
+  
+  #Wir berechnen die Korrelation zwischen allen werten
+  cor() %>%
+  
+  #Formen die Matrix zuerst in eine Tabelle und dann in einen Data Frame um 
+  as.table() %>%
+  as.data.frame()
+  
+  
+  
+  
+
+
