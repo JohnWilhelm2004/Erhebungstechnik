@@ -111,9 +111,95 @@ ggplot(plot.2.data) +
   #Wir editieren unser Theme minimal etwas damit es unseren Anforderungen entspricht
   theme_minimal(base_size = 12) +
   theme(
-    legend.position = "top", 
+    legend.position = "top", #Sorgt dafür das die Legende oben ist 
     panel.grid.minor = element_blank(),
-    plot.title = element_text(face = "bold", size = 16), 
-    axis.text.y = element_text(color = "black", size = 11)
+    plot.title = element_text(face = "bold", size = 16), #Überschrift Makieren und Richtige Größe einstellen 
+    axis.text.y = element_text(color = "black", size = 11) #Achsenbeschriftung einfärben und Größe Richtig bestimmen
   )
+
+#Frage/Plot 3 - Welche Materialien Korrelieren Tatsächlich mit dem Gefühl des Veständnis
+
+plot.3.data <- survey.data %>%
+  
+  #Wir brauchen das verständnis und alle Nutzungs-Spalten
+  select(Qualitaet_Verstehen_Num, starts_with("Nutzung")) %>%
+  
+  #Wir drehen wieder für ggplot die Daten damit alles untereinander steht 
+  pivot_longer(
+    cols = starts_with("Nutzung"),
+    names_to = "Tool",
+    values_to = "Haeufigkeit"
+  ) %>%
+  
+  #Wir räumen wieder die Namen auf 
+  mutate(Tool = str_remove_all(Tool, "Nutzung_|_Num")) %>%
+  
+  #Wir filtern alle die das Tool regelmäßig Nutzen
+  filter(Haeufigkeit >= 3) %>%
+  
+  #Wir rechnen absofort pro Tool
+  group_by(Tool) %>%
+  
+  #Jetzt berechnen wir die Werte die wir für den Plot eigentlich brauchen
+  summarise(
+    Note = mean(Qualitaet_Verstehen_Num, na.rm = TRUE), #Berechnung des Durchschnitts
+    Streuung = sd(Qualitaet_Verstehen_Num, na.rm = TRUE), #Fehlerbalken
+    Anzahl.User = n() #Wir zeigen an wie viele Nutzer es gab so kann man die aussagekräftigkeit besser einschätzen
+  ) %>%
+  
+  #Sortieren die Notes so das die beste vorne steht 
+  mutate(Tool = fct_reorder(Tool, Note, .desc = TRUE))
+
+
+#Jetzt erstellen wir unseren Mean/Error Plot 
+ggplot(plot.3.data, aes(x = Tool, y = Note, color = Tool)) +
+  
+  #Zuerst erstellen wir den Fehlerbalken
+  geom_errorbar(aes(ymin = Note - Streuung, ymax = Note + Streuung),
+                width = 0.2, size = 1) +
+  #Der Punkt welcher unseren durchschnittswert darstellt 
+  geom_point(size = 5) +
+  
+  #Text Label damit man sieht wie viele Leute zu einer Häufigen Lerngruppe gehören
+  geom_text(aes(label = paste0("n=", Anzahl.User)),
+            vjust = -2.5, size = 3.5, color = "grey70") +
+  
+  #Auswählen der Farbpalette
+  scale_colour_viridis_d(option = "mako", begin = 0.3, end = 0.9) +
+  
+  #Jezt fixieren wir die Achsen 
+  scale_y_continuous(limits = c(1, 5.5), breaks = 1:5) +
+  
+  #Beschriftung(WIP)
+  labs(
+    title = "Welches Lernmaterial korreliert am meisten mit dem Verständnis",
+    subtitle = "Durchschnittlich empfundenes Verständnis & Streuung der Regelmäßigen Nutzer",
+    y = "Verständnis (Subjektiv)",
+    x = NULL 
+  ) +
+  theme_minimal(base_size = 12)
+
+
+#Frage/Plot 4 - Macht es einen unterschied für die Note, ob ich ein Tool viel oder wenig nutze?
+
+#Wir erstellen hierfür einen Violin Plot, ursprünglich wollte ich nen einfachen 
+#Boxplot verwenden aber das war mir ein wenig zu langweilig
+
+#Wir starten wie immer mit unserer datenumformung
+plt.4.data <- survey.data %>%
+  
+  #Wir wählen die Zeilen aus die wir brauchen das Verständnis und Nutzung 
+  #von KI und Youtube im Vergleich mit Skript und Büchern
+  select(Qualitaet_Verstehen_Num, Nutzung_Skript_Num, Nutzung_KI_Num, Nutzung_YouTube_Num) %>%
+  
+  #Wir drehen die Daten wieder für den ggplot
+  mutate(Tool = str_remove_all(, "Nuztung_|_Num")) %>%
+  
+  #Jetzt unterscheiden wir die Studenten in 2 Gruppen
+  mutate(Gruppe = if_else(Haeufigkeit >= 4,
+                          "Viel Nutzer",
+                          "Wenig Nutzer")) %>%
+  
+  #Wir filtern Tool nur nach den Tools die wir tatsächlich haben wollen in unserem Violinen Plot
+  filter(Tool %in% c("Skript", "KI", "Youtube"))
   
