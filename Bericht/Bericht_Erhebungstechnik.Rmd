@@ -51,3 +51,36 @@ Durch das direkte Ansprechen sind methodische Einschränkungen unvermeidbar. Nur
 Die vorliegenden Resultate basieren auf einer standardisierten Online-Erhebung, welche mit LimeSurvey durchgeführt wurde. Über einen QR-Code konnten Studierende diese Aufrufen und direkt teilnehmen. Die Teilnehmer wurden darüber informiert, dass die Umfrage Anonym und Freiwillig ist und keine personenbezogenen Daten erfragt werden. Die Umfrage wurde im Vorfeld von einer Gruppe Studierender erstellt und überprüft. Die Erstellung und Auswertung wurde im Rahmen der Veranstaltung Erhebungstechnik durchgeführt und fokussiert sich auf den Vergleich der traditionellen und Digitalen Lernmethoden und deren Qualität für Studierende.
 
 ### 2.5.2. Stichprobe
+
+Es nahmen 128 Studierende an der Umfrage teil, wovon nach Aufbereitung die Ergebnisse von 83 Studierenden entwertet und interpretiert werden konnten. Die Umfrage erfolgte im Umfeld Fakultät Statistik, sodass eine Gelegenheitsstichprobe vorliegt. Dadurch sind Selektions- und Selbstselektionsverzerrungen möglich. Deshalb ist wichtig zu beachten, dass die vorliegenden Ergebnisse nicht zur Beantwortung der Leitfragen direkt dient und nur einen Teil der Grundgesamtheit darstellt. Die Auswertung fokussiert sich also nur auf die Stichprobe und soll eine Empfehlung aussprechen.
+
+### 2.5.3. Datensatz und Arbeitsgrundlage
+
+Zur Auswertung wurde eine von LimeSurvey erstellte CSV. Datei verwendet. Diese wurde vorerst bereinigt und zur Analyse angepasst, indem Variablen zusammengeführt, umbenannt und in die nötigen numerischen Skalen umgewandelt wurden. Insgesamt umfasst der Datensatz 31 Variablen welche die Fragebogenblöcke zu Studienmerkmalen, Lernerfolg, Einstellungen, Nutzung, Qualitätsurteilen sowie Wirkung/Effekten bilden. Zu Darstellungszwecken und einer übersichtlicheren Auswertung wurden verschiedene Bezeichnungen verkürzt (z.B. Nutzung, Qualität,...).
+
+### 2.5.4. Variablen und Skalenniveaus
+
+Der Datensatz enthält kategoriale Studienmerkmale sowie überwiegend ordinal skalierte Likert-Items, welche numerisch kodiert vorliegen:
+
+-   Nominal ( 2 Variablen): Fakultät, Abschluss
+
+-   Metrisch (1 Variable): Fachsemester
+
+-   Ordinal (Likert: 28 Variablen) u. a. ZufriedenheitScore (subjektive Zufriedenheit mit Lernerfolg), Einstellungsitems zur Kursstruktur und zum Übungsbetrieb, Nutzungshäufigkeiten verschiedener Lernmaterialen (Skripte, Mitschriften, Videoaufzeichnungen, Übungsaufgaben, Bücher, Altklausuren, Online-Videos, KI-Chatbots) sowie Urteile zur Qualität der Materialien und wahrgenommene Effekte (Motivation, Sicherheit, Arbeitsbelastung, Prüfungsstress, Zeitaufwand, Prüfungsrelevanz). Das Freitextfeld welches ein Feedback ermöglicht wurde erhoben, ist jedoch kein Bestandteil der bereinigten CSV Datei, da diese keinen Entscheidenen Faktor spielen.
+
+### 2.5.5. Datenaufbereitung und fehlende Werte
+
+Damit die Analyse qualitativ vollzogen werden konnte wurden folgende Änderungen an der Roh Datei vollzogen:
+
+1.  Bereinigung von Merkmalen und Skalen: Kategoriale Merkmale wurden in nominale Variablen und Skalenwerte als numerische Variablen gespeichert.
+2.  Umskalierung: Likert-Items wurden in numerische Werte zwischen 1-5 codiert (1 = niedrigstes Vorkommen, 5 = häufigstes Vorkommen), wodurch die Vergleichbarkeit vereinfacht wurde.
+3.  Fehlende Werte: Unbeantwortete Items wurden als NA kodiert. Insgesamt liegen 107 NAs über alle Variablen verteilt vor. 53 Personen haben die Umfrage vollständig beantwortet. Im Durchschnitt hat jeder Teilnehmer 1,26 fehlende Werte.
+
+Die 107 fehlenden Werte setzen sich wie folgt zusammen:
+
+-   Studienmerkmale (3 Variablen): 5 NA
+-   Lernerfolg (2 Variablen): 2 NA
+-   Einstellungen (5 Variablen): 12 NA
+-   Nutzung Lernmaterialien (9 Variablen): 46 NA
+-   Qualität (5 Variablen): 10 NA
+-   Effekte (7 Variablen): 32 NA
