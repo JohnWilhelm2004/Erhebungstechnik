@@ -344,7 +344,7 @@ plot.5.data.cor.2 <- survey.data %>%
   as.table() %>%
   as.data.frame() %>%
   filter(
-     str_detect(Var1, "Nutzung"),
+    str_detect(Var1, "Nutzung"),
     !str_detect(Var2, "Nutzung")
   ) %>%
   mutate(
@@ -358,8 +358,9 @@ ggplot(plot.5.data.cor.2, aes(x = Freq, y = reorder(Effekt, Freq), fill = Effekt
   scale_fill_viridis_d(option = "mako", begin = 0.3, end = 0.8) +
   geom_vline(xintercept = 0, linetype = "dashed", color = "grey70") +
   labs(
-    title = "Steckbrief der Werkzeuge",
-    x = "Stärke des Zusammenhangs",
+    title = "Korrelation von Zufridenheitsmetriken mit verwendetem Arbeitsmaterial",
+    subtitle = "Ein Vergleich um zu schauen welche Materialen mit welchen Gefühle bei Studierenden Korrelieren",
+    x = "Korrelation (r) (Höher ist hier immer besser)",
     y = NULL
   ) +
   theme_minimal(base_size = 12)
