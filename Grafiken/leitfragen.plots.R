@@ -102,8 +102,7 @@ ggplot(plot.2.data) +
   #Hier nehmen wir unsere Standard Farbpalette 
   scale_color_viridis_d(option = "mako", begin = 0.2, end = 0.8) +
   #Wir erstellen Überschrift und Achsenbeschriftungen für die Verständnis
-  labs(title = "Effizienz Trugschluss",
-       subtitle = "Vergleich der Korrelation zwischen Zeitaufwand vs. Korrelation mit Verständnis",
+  labs(
        x = "Korrelationsstärke (r)\n ← Spart Zeit/ Wenig Verständnis | Kostet Zeit / Hohes Verständnis →",
        y = NULL,
        color = "Gemessener Effekt"
@@ -172,8 +171,6 @@ ggplot(plot.3.data, aes(x = Tool, y = Note, color = Tool)) +
   
   #Beschriftung(WIP)
   labs(
-    title = "Welches Lernmaterial korreliert am meisten mit dem Verständnis",
-    subtitle = "Durchschnittlich empfundenes Verständnis & Streuung der Regelmäßigen Nutzer",
     y = "Verständnis (Subjektiv)",
     x = NULL 
   ) +
@@ -229,8 +226,7 @@ ggplot(plot.4.data, aes(x = Qualitaet_Verstehen_Num, fill = Gruppe, color = Grup
   scale_color_viridis_d(option = "mako", begin = 0.4, end = 0.8) +
   
   #Wir erstellen Überschrift und Achsenbeschriftungen für die Verständnis
-  labs(title = "Viel Nutzer vs. Wenig Nutzer",
-       subtitle = "Verteilung des Verstädnis unter Hohen und Niedrigen Nutzergruppen im Vergleich",
+  labs(
        x = "Verständnis (Von 1 bis 5)",
        y = "Dichte",
        fill = "Gruppe"
@@ -288,7 +284,6 @@ ggplot(plot.4.5.data, aes (x = Freq, y = reorder(Tool, Freq), fill = Tool)) +
   scale_fill_viridis_d(option = "mako", begin = 0.4, end = 0.8) +
   geom_vline(xintercept = 0, linetype = "dashed", color = "grey70") +
   labs(
-    title = "Wie Korrelieren Arbeitsmaterialien mit den Effekten",
     x = "Stärke des Zusammenhangs (GGrößer ist besser)",
     y = NULL
   ) +
@@ -358,75 +353,8 @@ ggplot(plot.5.data.cor.2, aes(x = Freq, y = reorder(Effekt, Freq), fill = Effekt
   scale_fill_viridis_d(option = "mako", begin = 0.3, end = 0.8) +
   geom_vline(xintercept = 0, linetype = "dashed", color = "grey70") +
   labs(
-    title = "Korrelation von Zufridenheitsmetriken mit verwendetem Arbeitsmaterial",
-    subtitle = "Ein Vergleich um zu schauen welche Materialen mit welchen Gefühle bei Studierenden Korrelieren",
     x = "Korrelation (r) (Höher ist hier immer besser)",
     y = NULL
   ) +
   theme_minimal(base_size = 12)
 
-
-
-#DAS HIER IST BIS JETZT NOCH EIN KI INHALT, WIRD SPÄTER GEFIXED
-# ==============================================================================
-# PLOT 6: REFLEKTION - DIE KOMPLETTE LANDSCHAFT (All In)
-# ==============================================================================
-
-# 1. Datenvorbereitung: WIR NEHMEN ALLES
-plot.6.data <- survey.data %>%
-  # Wähle automatisch JEDE Spalte, die Zahlen enthält
-  select(where(is.numeric)) %>%
-  
-  # Optional: Falls du eine ID-Spalte oder einen Index ("X") hast, weg damit:
-  # select(-contains("ID"), -any_of("X")) %>% 
-  
-  drop_na()
-
-# WICHTIG: Wir speichern die Original-Reihenfolge der Spalten
-# (Damit R sie gleich nicht alphabetisch sortiert)
-original_order <- names(plot.6.data)
-
-# 2. Korrelation berechnen
-plot.6.cor <- plot.6.data %>%
-  cor() %>%
-  as.table() %>%
-  as.data.frame()
-
-# 3. Die Reihenfolge erzwingen
-# Wir sagen dem Plot: "Benutze genau die Liste 'original_order' zum Sortieren"
-plot.6.cor <- plot.6.cor %>%
-  mutate(
-    Var1 = factor(Var1, levels = original_order),
-    # Für die y-Achse drehen wir die Reihenfolge oft um (rev), 
-    # damit die Diagonale wie gewohnt von links oben nach rechts unten läuft
-    # oder wir lassen es gleich, je nach Geschmack. Hier: Gleich wie CSV.
-    Var2 = factor(Var2, levels = rev(original_order)) 
-  )
-
-# 4. Der große Heatmap-Plot
-ggplot(plot.6.cor, aes(x = Var1, y = Var2, fill = Freq)) +
-  geom_tile(color = "white", lwd = 0.2) + # Feine weiße Linien
-  
-  # Farben: Volles Spektrum von -1 (Rot/Blau) bis +1 (Hell/Gelb)
-  scale_fill_viridis_c(option = "mako", direction = 1, limits = c(-1, 1)) +
-  
-  # Achsenbeschriftung säubern (wir entfernen _Num etc. für Lesbarkeit)
-  scale_x_discrete(labels = function(x) str_remove_all(x, "Nutzung_|Qualitaet_|Effekt_|_Num|_Score|_Rev")) +
-  scale_y_discrete(labels = function(x) str_remove_all(x, "Nutzung_|Qualitaet_|Effekt_|_Num|_Score|_Rev")) +
-  
-  labs(
-    title = "Gesamt-Matrix: Alle Korrelationen",
-    subtitle = "Übersicht aller gemessenen Variablen im Kurs",
-    x = NULL,
-    y = NULL,
-    fill = "Korrelation"
-  ) +
-  theme_minimal(base_size = 10) +
-  theme(
-    # Text auf x-Achse senkrecht stellen, sonst überlappt alles bei vielen Variablen
-    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 8),
-    axis.text.y = element_text(size = 8),
-    panel.grid = element_blank(),
-    legend.position = "right"
-  ) +
-  coord_fixed() # Quadratische Kacheln
