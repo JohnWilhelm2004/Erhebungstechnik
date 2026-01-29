@@ -222,24 +222,24 @@ plot.4.data <- survey.data %>%
   #Wir machen unseren Datensatz wieder für den Plot "sauber"
   mutate(Tool = str_remove_all(Tool, "Nutzung_|_Num")) %>%
   
-  #Wir entfernen alle NAs
-  drop_na(Haeufigkeit) %>%
+  #Wir filtern alle störenden NAs raus 
+  filter(!is.na(Haeufigkeit), !is.na(Qualitaet_Verstehen_Num)) %>%
   
   #Jetzt unterscheiden wir die Studenten in 2 Gruppen
   mutate(Gruppe = if_else(Haeufigkeit >= 4,
                           "Viel Nutzer",
                           "Wenig Nutzer")) %>%
   
-  #Wir filtern Tool nur nach den Tools die wir tatsächlich haben wollen in unserem Violinen Plot
+  #Wir filtern Tool nur nach den Tools die wir tatsächlich haben wollen in unserem Density Plot
   filter(Tool %in% c("Skript", "KI", "YouTube", "Buecher"))
 
 #Jetzt erstellen wir unseren density Plot 
 plot4 <- ggplot(plot.4.data, aes(x = Qualitaet_Verstehen_Num, fill = Gruppe, color = Gruppe)) +
   
-  #Wir erstellen unseren density Plot mit alpha = 0.4 damit die Hügel transperent sind 
+  #Wir erstellen unseren density Plot mit alpha = 0.4 damit die Hügel transparent sind 
   geom_density(alpha = 0.4) +
   
-  #Dieser Befehl sorgt dafür das wir sozusagen mini Plots für jedes der Materialien erstellen 
+  #Dieser Befehl sorgt dafür das wir sozusagen Mini Plots für jedes der Materialien erstellen 
   facet_wrap(~Tool) +
   
   #Hier nehmen wir unsere Standard Farbpalette 
@@ -281,11 +281,9 @@ plot.4.5.data <- survey.data %>%
          starts_with("Effekt_"),
          Qualitaet_Verstehen_Num) %>%
   
-  #Wir entfernen alle NAs 
-  drop_na() %>%
-  
   #Wir berechnen die Korrelation zwischen all diesen Werten
-  cor() %>%
+  #Außerdem stellen wir sicher das immer das Vollständige Wertepaar vorhanden ist 
+  cor(use = "pairwise.complete.obs") %>%
   
   #Hier wieder unser trick aus Plot 4 um die Daten ins richtige Format zu rücken
   as.table() %>%
@@ -334,11 +332,8 @@ plot.5.data.cor <- survey.data %>%
   #Wir suchen alle Eigenschaften raus die mit der Zufriedenheit interessant korrelieren könnten
   select(starts_with("Qualitaet_"), starts_with("Effekt_"), Zufriedenheit_Score) %>%
   
-  #Wir entfernen alle Fehlenden Werte für den Plot 
-  drop_na() %>%
-  
-  #Wir berechnen die Korrelation zwischen allen werten
-  cor() %>%
+  #Wir berechnen die Korrelation zwischen allen werten und filtern wieder NAs
+  cor(use = "pairwise.complete.obs") %>%
   
   #Formen die Matrix zuerst in eine Tabelle und dann in einen Data Frame um 
   as.table() %>%
@@ -363,11 +358,8 @@ plot.5.data.cor.2 <- survey.data %>%
          Effekt_Stress_Num,
          Effekt_Zeitaufwand_Rev,
          Qualitaet_Verstehen_Num) %>%
-  #Wir entfernen alle na werte damit wir später keine Probleme bekommen
-  drop_na() %>%
-  
-  #Wir berechnen von diesen Aspekten die Korrelationen
-  cor() %>%
+  #Wir berechnen von diesen Aspekten die Korrelationen und filtern wieder die NAs
+  cor(use = "pairwise.complete.obs") %>%
   
   #Wir wenden wieder unseren Umformatierungstrick an
   as.table() %>%
@@ -399,3 +391,50 @@ ggsave("Plot5.Effekt.cor.pdf",
        width = 7,
        height = 4.5)
 
+#Plot 6 - Sonderanfertigung - Fokussierte Korrelationsheatmap für Annika
+
+plot.6.data <- survey.data %>%
+  
+  select(Zufriedenheit_Score,
+         starts_with("Nutzung"),
+         starts_with("Qualitaet_"),
+         starts_with("Effekt")) %>%
+  cor(use = "pairwise.complete.obs") %>%
+  as.table() %>%
+  as.data.frame() %>%
+  
+  mutate(
+    Var1 = str_remove_all(Var1, "Nutzung_|Qualitaet_|Effekt_|_Num|_Score|_Rev"),
+    Var2 = str_remove_all(Var2, "Nutzung_|Qualitaet_|Effekt_|_Num|_Score|_Rev"),
+  )
+
+current.order <- unique(plot.6.data$Var1)
+desired.order <- c("zufriedenheit", setdiff(current.order, "Zufriedenheit"))
+
+plot.6.data <- plot.6.data %>%
+  
+  mutate(
+    Var1 = factor(Var1, levels = desired.order),
+    Var2 = factor(Var2, levels = desired.order)
+  )
+
+ggplot(plot.6.data, aes(x = Var1, y = Var2)) +
+  
+  geom_tile(aes(fill = Freq)) +
+  
+  geom_text(color = "black", aes(label = round(Freq, 2), size = 2.5)) +
+  
+  
+  scale_fill_viridis_c(option = "mako", begin = 0.3, end = 0.8, limits = c(-1, 1)) +
+  
+  labs(
+    x = NULL,
+    y = NULL,
+    fill = "Korrelation"
+  ) +
+  theme_minimal() 
+  
+
+  
+  
+  
