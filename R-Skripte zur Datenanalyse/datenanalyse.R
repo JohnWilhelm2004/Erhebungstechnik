@@ -11,6 +11,63 @@ library(tidyverse)
 survey.data <- read.csv("results-survey_cleaned.csv")
 
 
+plot.4.5.data <- survey.data %>%
+  #Wir wählen wieder unsere gebrauchten Eigenschaften aus, 
+  #wir nehmen nicht alle Effekte weil unsere Plots sonst zu unübersichtlich werden
+  select(starts_with("Nutzung_"),
+         starts_with("Effekt_"),
+         Qualitaet_Verstehen_Num) %>%
+  
+  
+  select(-Effekt_Zeitaufwand_Rev) %>%
+  
+  #Wir entfernen alle NAs 
+  # drop_na() %>%
+  
+  #Wir berechnen die Korrelation zwischen all diesen Werten
+  cor(use = "pairwise.complete.obs") %>%
+  
+  #Hier wieder unser trick aus Plot 4 um die Daten ins richtige Format zu rücken
+  as.table() %>%
+  as.data.frame() %>%
+  
+  #Jetzt filtern wir die Korrelationen die wir tatsächlich haben wollen
+  filter(str_detect(Var1, "Nutzung"), !str_detect(Var2, "Nutzung")) %>%
+  
+  #Wir machen unsere Namen für die Plots wieder schön 
+  mutate(
+    Tool = str_remove_all(Var1, "Nutzung_|_Num"),
+    
+    #Wir entfernen auch noch andere Überbleibsel 
+    Effekt = str_remove_all(Var2, "Effekt_|Qualitaet_|Nutzung_|_Num|_Rev")
+  )
+
+plot4.5 <- ggplot(plot.4.5.data, aes (x = Freq, y = reorder(Tool, Freq), fill = Tool)) +
+  #Hiermit erstellen wir unsere Balken
+  geom_col() +
+  
+  #Das hier sorgt dafür das wir wieder viele
+  facet_wrap(~Effekt, scales = "free_x") +
+  scale_fill_viridis_d(option = "mako", begin = 0.4, end = 0.8) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "grey70") +
+  labs(
+    x = "Stärke des Zusammenhangs (GGrößer ist besser)",
+    y = NULL
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "none",
+    panel.grid.minor = element_blank(),
+    strip.text = element_text(face = "bold", size = 11)
+  )
+
+#Wir speichern wieder unser Bild
+ggsave("Plot4.5.Korrelation.pdf",
+       plot = plot4.5,
+       device = "pdf",
+       width = 10,
+       height = 4.5)
+
 
 # 1. Datenvorbereitung: WIR NEHMEN ALLES
 plot.6.data <- survey.data %>%
@@ -80,6 +137,13 @@ ggplot(plot.6.cor, aes(x = Var1, y = Var2, fill = Freq)) +
 
 
 plot(table(survey.data$Qualitaet_Verstehen_Num[survey.data$Nutzung_YouTube_Num >= 2]))
+
+survey.data[ ,c(12:18)][survey.data$Abschluss == "Master"]
+# Schema: data[ ZEILEN , SPALTEN ]
+(survey.data[survey.data$Abschluss == "Master", c(12:18)])
+
+
+
 
 library(tidyverse)
 
