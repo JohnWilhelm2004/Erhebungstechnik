@@ -27,7 +27,7 @@ plot.1.data <- survey.data %>%
   )
 
 #Wir erstellen unseren Plot für das erste Thema 
-ggplot(plot.1.data, aes(x = Score, y = Material)) +
+plot1 <- ggplot(plot.1.data, aes(x = Score, y = Material)) +
   #Wir erstellen einen kleinen Punkt an der Spitze der Nutzung
   geom_point(size = 3, aes(color = Material)) +
   #Wir zeichnen eine Linie die bis zu dem eben gezeichneten Punkt geht 
@@ -49,6 +49,13 @@ ggplot(plot.1.data, aes(x = Score, y = Material)) +
     axis.text.y = element_text(color = "black", size = 11)
   ) +
   scale_color_viridis_d(option = "mako") 
+
+#Wir speichern unsere Grafik fürs Github Projekt
+ggsave("Plot1.Nutzung.pdf",
+       plot = plot1,
+       device = "pdf",
+       width = 7,
+       height = 4.5)
 
 #Frage/Plot 2 - Zeigen das viele Studenten sich Zeitersparnis beim Studium wünschen
 
@@ -85,7 +92,7 @@ plot.2.data <- left_join(cor.time, cor.understanding, by = "Material") %>%
   )
 
 #Jetzt können wir unseren finalen ggplot Erstellen das hier wird ein Dumbell Plot 
-ggplot(plot.2.data) +
+plot2 <- ggplot(plot.2.data) +
   
   #Dieser Teil baut die Linie in der mitte die die Beiden Korrelationswerte miteinander verbindet 
   geom_segment(aes(
@@ -115,6 +122,13 @@ ggplot(plot.2.data) +
     plot.title = element_text(face = "bold", size = 16), #Überschrift Makieren und Richtige Größe einstellen 
     axis.text.y = element_text(color = "black", size = 11) #Achsenbeschriftung einfärben und Größe Richtig bestimmen
   )
+
+#Wir speichern wieder unseren Plot 
+ggsave("Plot2.cor.time.verst.pdf",
+       plot = plot2,
+       device = "pdf",
+       width = 7,
+       height = 4.5)
 
 #Frage/Plot 3 - Welche Materialien Korrelieren Tatsächlich mit dem Gefühl des Veständnis
 
@@ -151,7 +165,7 @@ plot.3.data <- survey.data %>%
 
 
 #Jetzt erstellen wir unseren Mean/Error Plot 
-ggplot(plot.3.data, aes(x = Tool, y = Note, color = Tool)) +
+plot3 <- ggplot(plot.3.data, aes(x = Tool, y = Note, color = Tool)) +
   
   #Zuerst erstellen wir den Fehlerbalken
   geom_errorbar(aes(ymin = Note - Streuung, ymax = Note + Streuung),
@@ -175,6 +189,13 @@ ggplot(plot.3.data, aes(x = Tool, y = Note, color = Tool)) +
     x = NULL 
   ) +
   theme_minimal(base_size = 12)
+
+#Wir speichern wieder unseren Plot
+ggsave("Plot3.Errorplot.pdf",
+       plot = plot3,
+       device = "pdf",
+       width = 7,
+       height = 4.5)
 
 
 #Frage/Plot 4 - Macht es einen unterschied für die Note, ob ich ein Tool viel oder wenig nutze?
@@ -213,7 +234,7 @@ plot.4.data <- survey.data %>%
   filter(Tool %in% c("Skript", "KI", "YouTube", "Buecher"))
 
 #Jetzt erstellen wir unseren density Plot 
-ggplot(plot.4.data, aes(x = Qualitaet_Verstehen_Num, fill = Gruppe, color = Gruppe)) +
+plot4 <- ggplot(plot.4.data, aes(x = Qualitaet_Verstehen_Num, fill = Gruppe, color = Gruppe)) +
   
   #Wir erstellen unseren density Plot mit alpha = 0.4 damit die Hügel transperent sind 
   geom_density(alpha = 0.4) +
@@ -241,6 +262,14 @@ ggplot(plot.4.data, aes(x = Qualitaet_Verstehen_Num, fill = Gruppe, color = Grup
     axis.text.y = element_text(color = "black", size = 11) #Achsenbeschriftung einfärben und Größe Richtig bestimmen
   )
 
+
+#Wir speichern wieder unsere Grafik 
+ggsave("Plot4.Verständnisdichte.pdf",
+       plot = plot4,
+       device = "pdf",
+       width = 7,
+       height = 4.5)
+
 #Frage4.5/Plot4.5 - Mit welchen Effekten Korrelieren die Arbeitsmaterialien
 #Es fehlt zwischen PLot 4 und 5 für die Argumentation unserer These der Übergang deswegen
 #gucken wir uns jetzt an wie die Materialien mit den Effekten zusammenhängen die für die Zufriedenheit sorgen können
@@ -249,9 +278,7 @@ plot.4.5.data <- survey.data %>%
   #Wir wählen wieder unsere gebrauchten Eigenschaften aus, 
   #wir nehmen nicht alle Effekte weil unsere Plots sonst zu unübersichtlich werden
   select(starts_with("Nutzung_"),
-         Effekt_Sicherheit_Num,
-         Effekt_Stress_Num,
-         Effekt_Zeitaufwand_Rev,
+         starts_with("Effekt_")
          Qualitaet_Verstehen_Num) %>%
   
   #Wir entfernen alle NAs 
@@ -275,7 +302,7 @@ plot.4.5.data <- survey.data %>%
     Effekt = str_remove_all(Var2, "Effekt_|Qualitaet_|Nutzung_|_Num|_Rev")
   )
 
-ggplot(plot.4.5.data, aes (x = Freq, y = reorder(Tool, Freq), fill = Tool)) +
+plot4.5 <- ggplot(plot.4.5.data, aes (x = Freq, y = reorder(Tool, Freq), fill = Tool)) +
   #Hiermit erstellen wir unsere Balken
   geom_col() +
   
@@ -293,6 +320,13 @@ ggplot(plot.4.5.data, aes (x = Freq, y = reorder(Tool, Freq), fill = Tool)) +
     panel.grid.minor = element_blank(),
     strip.text = element_text(face = "bold", size = 11)
   )
+
+#Wir speichern wieder unser Bild
+ggsave("Plot4.5.Korrelation.pdf",
+       plot = plot4.5,
+       device = "pdf",
+       width = 7,
+       height = 4.5)
 
 #Plot/Frage 5 - Wie Korrelieren Qualitäts und Effekteigenschaften mit der Zufriedenheit
 plot.5.data.cor <- survey.data %>%
@@ -347,7 +381,7 @@ plot.5.data.cor.2 <- survey.data %>%
     Effekt = str_remove_all(Var2, "Effekt_|Qualitaet_|_Num|_Rev")
   )
 
-ggplot(plot.5.data.cor.2, aes(x = Freq, y = reorder(Effekt, Freq), fill = Effekt)) +
+plot5 <- ggplot(plot.5.data.cor.2, aes(x = Freq, y = reorder(Effekt, Freq), fill = Effekt)) +
   geom_col() +
   facet_wrap(~Tool, ncol = 3) +
   scale_fill_viridis_d(option = "mako", begin = 0.3, end = 0.8) +
@@ -357,4 +391,11 @@ ggplot(plot.5.data.cor.2, aes(x = Freq, y = reorder(Effekt, Freq), fill = Effekt
     y = NULL
   ) +
   theme_minimal(base_size = 12)
+
+#Wir Speichern wieder unsere Ergebnisse
+ggsave("Plot5.Effekt.cor.pdf",
+       plot = plot5,
+       device = "pdf",
+       width = 7,
+       height = 4.5)
 
