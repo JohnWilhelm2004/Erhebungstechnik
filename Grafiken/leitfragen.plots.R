@@ -148,7 +148,7 @@ plot.3.data <- survey.data %>%
   mutate(Tool = str_remove_all(Tool, "Nutzung_|_Num")) %>%
   
   #Wir filtern alle die das Tool regelmäßig Nutzen
-  filter(Haeufigkeit >= 3) %>%
+  filter(Haeufigkeit >= 4) %>%
   
   #Wir rechnen absofort pro Tool
   group_by(Tool) %>%
@@ -278,7 +278,7 @@ plot.4.5.data <- survey.data %>%
   #Wir wählen wieder unsere gebrauchten Eigenschaften aus, 
   #wir nehmen nicht alle Effekte weil unsere Plots sonst zu unübersichtlich werden
   select(starts_with("Nutzung_"),
-         starts_with("Effekt_")
+         starts_with("Effekt_"),
          Qualitaet_Verstehen_Num) %>%
   
   #Wir entfernen alle NAs 
@@ -296,7 +296,7 @@ plot.4.5.data <- survey.data %>%
   
   #Wir machen unsere Namen für die Plots wieder schön 
   mutate(
-    Tool = str_remove_all(Var1, "Nuztung_|_Num"),
+    Tool = str_remove_all(Var1, "Nutzung_|_Num"),
     
     #Wir entfernen auch noch andere Überbleibsel 
     Effekt = str_remove_all(Var2, "Effekt_|Qualitaet_|Nutzung_|_Num|_Rev")
@@ -325,7 +325,7 @@ plot4.5 <- ggplot(plot.4.5.data, aes (x = Freq, y = reorder(Tool, Freq), fill = 
 ggsave("Plot4.5.Korrelation.pdf",
        plot = plot4.5,
        device = "pdf",
-       width = 7,
+       width = 10,
        height = 4.5)
 
 #Plot/Frage 5 - Wie Korrelieren Qualitäts und Effekteigenschaften mit der Zufriedenheit
