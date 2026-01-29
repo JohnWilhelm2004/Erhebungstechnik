@@ -6,11 +6,121 @@
 library(tidyverse)
 
 # 2. Daten einlesen
-# setwd("C:/Users/Annika/Documents/GitHub/Erhebungstechnik/R-Skripte zur Datenanalyse")
-source("funktionen.R") # Lädt automatisch auch die Helfer
+# source("funktionen.R") # Lädt automatisch auch die Helfer
 
-# setwd("C:/Users/Annika/Documents/ErhebTech")
-data <- read.csv("results-survey_cleaned.csv")
+survey.data <- read.csv("results-survey_cleaned.csv")
+
+
+
+# 1. Datenvorbereitung: WIR NEHMEN ALLES
+plot.6.data <- survey.data %>%
+  # Wähle automatisch JEDE Spalte, die Zahlen enthält
+  select(where(is.numeric)) %>%
+  select(-Fachsemester) # VERÄNDERUNG
+  
+  # Optional: Falls du eine ID-Spalte oder einen Index ("X") hast, weg damit:
+  # select(-contains("ID"), -any_of("X")) %>% 
+  
+  # drop_na()
+
+# WICHTIG: Wir speichern die Original-Reihenfolge der Spalten
+# (Damit R sie gleich nicht alphabetisch sortiert)
+original_order <- names(plot.6.data)
+
+# 2. Korrelation berechnen
+plot.6.cor <- plot.6.data %>%
+  cor(use = "pairwise.complete.obs") %>%
+  as.table() %>%
+  as.data.frame()
+
+# 3. Die Reihenfolge erzwingen
+# Wir sagen dem Plot: "Benutze genau die Liste 'original_order' zum Sortieren"
+plot.6.cor <- plot.6.cor %>%
+  mutate(
+    Var1 = factor(Var1, levels = original_order),
+    # Für die y-Achse drehen wir die Reihenfolge oft um (rev), 
+    # damit die Diagonale wie gewohnt von links oben nach rechts unten läuft
+    # oder wir lassen es gleich, je nach Geschmack. Hier: Gleich wie CSV.
+    Var2 = factor(Var2, levels = rev(original_order)) 
+  )
+
+# 4. Der große Heatmap-Plot
+ggplot(plot.6.cor, aes(x = Var1, y = Var2, fill = Freq)) +
+  geom_tile(color = "white", lwd = 0.2) + # Feine weiße Linien
+  
+  # Farben: Volles Spektrum von -1 (Rot/Blau) bis +1 (Hell/Gelb)
+  scale_fill_viridis_c(option = "mako", direction = 1, limits = c(-1, 1)) +
+  
+  # <--- HIER: Zahlen hinzufügen
+  geom_text(aes(label = round(Freq, 2)), color = "white", size = 2.5) +
+  
+  # Achsenbeschriftung säubern (wir entfernen _Num etc. für Lesbarkeit)
+  scale_x_discrete(labels = function(x) str_remove_all(x, "Nutzung_|Qualitaet_|Effekt_|_Num|_Score|_Rev")) +
+  scale_y_discrete(labels = function(x) str_remove_all(x, "Nutzung_|Qualitaet_|Effekt_|_Num|_Score|_Rev")) +
+  
+  labs(
+    title = "Gesamt-Matrix: Alle Korrelationen",
+    subtitle = "Übersicht aller gemessenen Variablen im Kurs",
+    x = NULL,
+    y = NULL,
+    fill = "Korrelation"
+  ) +
+  theme_minimal(base_size = 10) +
+  theme(
+    # Text auf x-Achse senkrecht stellen, sonst überlappt alles bei vielen Variablen
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 8),
+    axis.text.y = element_text(size = 8),
+    panel.grid = element_blank(),
+    legend.position = "right"
+  ) +
+  coord_fixed() # Quadratische Kacheln
+
+
+
+
+
+plot(table(survey.data$Qualitaet_Verstehen_Num[survey.data$Nutzung_YouTube_Num >= 2]))
+
+library(tidyverse)
+
+# 1. Wir definieren die Spalten, die uns interessieren
+usage_cols <- survey.data %>%
+  select(starts_with("Nutzung_") & ends_with("_Num")) %>%
+  names()
+
+# 2. Wir berechnen für jedes Material die beiden Korrelationen
+# map_dfr iteriert über die Liste und baut direkt einen Dataframe zusammen
+efficiency_table <- usage_cols %>%
+  map_dfr(function(col_name) {
+    
+    # Korrelation: Nutzung vs. Zeitaufwand
+    r_time <- cor(survey.data[[col_name]], 
+                  survey.data$Effekt_Zeitaufwand_Num, 
+                  use = "complete.obs") # Wichtig: NAs ignorieren
+    
+    # Korrelation: Nutzung vs. Verständnis
+    r_verst <- cor(survey.data[[col_name]], 
+                   survey.data$Qualitaet_Verstehen_Num, 
+                   use = "complete.obs")
+    
+    # Ergebniszeile zurückgeben
+    tibble(
+      Material = str_remove_all(col_name, "Nutzung_|_Num"), # Namen säubern
+      Cor_Zeit = r_time,
+      Cor_Verstaendnis = r_verst,
+      # Hier berechnen wir direkt deinen "Effizienz-Abstand"
+      Effizienz_Delta = r_verst - r_time 
+    )
+  }) %>%
+  # Optional: Nach Effizienz sortieren
+  arrange(desc(Effizienz_Delta))
+
+# 3. Ergebnis anzeigen
+print(efficiency_table)
+
+
+
+
 
 # Test (i): Wie hoch ist die Zufriedenheit im Schnitt?
 print(calculate_metric_stats(daten, "Zufriedenheit_Score"))
