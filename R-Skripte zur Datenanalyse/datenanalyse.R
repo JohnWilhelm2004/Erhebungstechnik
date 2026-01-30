@@ -87,15 +87,12 @@ ggsave("Plot4.Verständnisdichte.pdf",
 # PLOT 4.5
 # ==============================================================================
 
+# 1. Datenvorbereitung
 plot.4.5.data <- survey.data %>%
-  #Wir wählen wieder unsere gebrauchten Eigenschaften aus, 
-  #wir nehmen nicht alle Effekte weil unsere Plots sonst zu unübersichtlich werden
   select(starts_with("Nutzung_"),
          starts_with("Effekt_"),
          Qualitaet_Verstehen_Num) %>%
-  
-  
-  select(-Effekt_Zeitaufwand_Rev) %>%
+  select(-Effekt_Zeitaufwand_Num) %>%
   
   #Wir entfernen alle NAs 
   # drop_na() %>%
@@ -114,27 +111,71 @@ plot.4.5.data <- survey.data %>%
   mutate(
     Tool = str_remove_all(Var1, "Nutzung_|_Num"),
     
-    #Wir entfernen auch noch andere Überbleibsel 
-    Effekt = str_remove_all(Var2, "Effekt_|Qualitaet_|Nutzung_|_Num|_Rev")
+  
+  # NEU: 
+  # Kategorie zuweisen (Digital vs. Analog)
+  Kategorie = if_else(Tool %in% c("KI", "YouTube", "Video"), "Digital", "Analog"),
+  
+  # 1. Schritt: Effekt-Namen grundlegend bereinigen
+  Effekt = str_remove_all(Var2, "Effekt_|Qualitaet_|Nutzung_|_Num|_Rev")
+  ) %>%
+  
+  # 2. Schritt: Gezielte Umbenennung (In eigenem mutate zur Sicherheit gegen Fehlermeldungen)
+  mutate(
+    Effekt = case_when(
+      Effekt == "Stress" ~ "verringert Stress",
+      Effekt == "Zeitaufwand" ~ "verringert Zeitaufwand",
+      Effekt == "Verstehen" ~ "Verständnis", # Optional: Vereinheitlichung
+      TRUE ~ Effekt
+    )
   )
 
-plot4.5 <- ggplot(plot.4.5.data, aes (x = Freq, y = reorder(Tool, Freq), fill = Tool)) +
+# 3. Sortierung festlegen (Digital oben, Analog unten)
+# Wir sortieren erst im Datensatz und "frieren" die Reihenfolge dann als Factor ein
+plot.4.5.data <- plot.4.5.data %>%
+  arrange(desc(Kategorie), Freq) %>%
+  mutate(Tool = factor(Tool, levels = unique(Tool)))
+
+# 4. Manuelle Farbpalette definieren (Blau für Digital, Rot für Analog)
+my_colors <- c(
+  # Digital (Blautöne)
+  "KI"            = "#084594", 
+  "YouTube"       = "#2171b5", 
+  "Video"         = "#6baed6",
+  
+  # Analog (Rottöne)
+  "Skript"        = "#99000d", 
+  "Kurzskript"    = "#cb181d", 
+  "Mitschriften"  = "#ef3b2c",
+  "Buecher"       = "#fb6a4a", 
+  "Musterloesung" = "#fc9272", 
+  "Altklausuren"  = "#fcbba1"
+)
+
+plot4.5 <- ggplot(plot.4.5.data, aes (x = Freq, y = Tool, fill = Tool)) + # y = Tool (nicht reorder, da wir oben schon sortiert haben)
   #Hiermit erstellen wir unsere Balken
   geom_col() +
   
   #Das hier sorgt dafür das wir wieder viele
   facet_wrap(~Effekt, scales = "free_x") +
-  scale_fill_viridis_d(option = "mako", begin = 0.4, end = 0.8) +
+  
+  # scale_fill_viridis_d(option = "mako", begin = 0.4, end = 0.8) +
+  # NEU: Manuelle Farben anwenden
+  scale_fill_manual(values = my_colors) +
+  
   geom_vline(xintercept = 0, linetype = "dashed", color = "grey70") +
   labs(
-    x = "Stärke des Zusammenhangs (GGrößer ist besser)",
-    y = NULL
+    x = "Korrelation",
+    y = NULL,
+    title = "Korrelationen: Digital (Blau) vs. Analog (Rot)"
   ) +
   theme_minimal(base_size = 12) +
   theme(
     legend.position = "none",
     panel.grid.minor = element_blank(),
-    strip.text = element_text(face = "bold", size = 11)
+    strip.text = element_text(face = "bold", size = 11),
+    # Optional: Y-Achsen-Text fett machen, um Gruppen besser zu sehen
+    axis.text.y = element_text(color = "black")
   )
 
 #Wir speichern wieder unser Bild
@@ -142,7 +183,7 @@ ggsave("Plot4.5.Korrelation.pdf",
        plot = plot4.5,
        device = "pdf",
        width = 10,
-       height = 4.5)
+       height = 5) # Ein bisschen höher, damit Platz ist
 
 
 # ==============================================================================
