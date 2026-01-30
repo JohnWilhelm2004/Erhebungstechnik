@@ -274,50 +274,45 @@ ggsave("Plot4.Verständnisdichte.pdf",
 #Es fehlt zwischen PLot 4 und 5 für die Argumentation unserer These der Übergang deswegen
 #gucken wir uns jetzt an wie die Materialien mit den Effekten zusammenhängen die für die Zufriedenheit sorgen können
 
+
 plot.4.5.data <- survey.data %>%
-  #Wir wählen wieder unsere gebrauchten Eigenschaften aus, 
-  #wir nehmen nicht alle Effekte weil unsere Plots sonst zu unübersichtlich werden
+  #Wir wählen wieder alle Spalten aus die wir brauchen 
   select(starts_with("Nutzung_"),
-         starts_with("Effekt_"),
+         Effekt_Sicherheit_Num,
+         Effekt_Stress_Num,
+         Effekt_Zeitaufwand_Rev,
          Qualitaet_Verstehen_Num) %>%
-  
-  #Wir berechnen die Korrelation zwischen all diesen Werten
-  #Außerdem stellen wir sicher das immer das Vollständige Wertepaar vorhanden ist 
+  #Wir berechnen von diesen Aspekten die Korrelationen und filtern wieder die NAs
   cor(use = "pairwise.complete.obs") %>%
   
-  #Hier wieder unser trick aus Plot 4 um die Daten ins richtige Format zu rücken
+  #Wir wenden wieder unseren Umformatierungstrick an
   as.table() %>%
   as.data.frame() %>%
-  
-  #Jetzt filtern wir die Korrelationen die wir tatsächlich haben wollen
-  filter(str_detect(Var1, "Nutzung"), !str_detect(Var2, "Nutzung")) %>%
-  
-  #Wir machen unsere Namen für die Plots wieder schön 
+  filter(
+    str_detect(Var1, "Nutzung"),
+    !str_detect(Var2, "Nutzung")
+  ) %>%
   mutate(
     Tool = str_remove_all(Var1, "Nutzung_|_Num"),
-    
-    #Wir entfernen auch noch andere Überbleibsel 
-    Effekt = str_remove_all(Var2, "Effekt_|Qualitaet_|Nutzung_|_Num|_Rev")
+    Effekt = str_remove_all(Var2, "Effekt_|Qualitaet_|_Num|_Rev")
   )
 
-plot4.5 <- ggplot(plot.4.5.data, aes (x = Freq, y = reorder(Tool, Freq), fill = Tool)) +
-  #Hiermit erstellen wir unsere Balken
+plot4.5 <- ggplot(plot.4.5.data, aes(x = Freq, y = reorder(Effekt, Freq), fill = Effekt)) +
   geom_col() +
-  
-  #Das hier sorgt dafür das wir wieder viele
-  facet_wrap(~Effekt, scales = "free_x") +
-  scale_fill_viridis_d(option = "mako", begin = 0.4, end = 0.8) +
+  facet_wrap(~Tool, ncol = 3) +
+   
+   
+   geom_text(aes(label = sprintf("%.2f", Freq),
+                 hjust = ifelse(Freq > 0, -0.3, 1.3)),
+             size = 3.5,
+             color = "black") +
+  scale_fill_viridis_d(option = "mako", begin = 0.3, end = 0.8) +
   geom_vline(xintercept = 0, linetype = "dashed", color = "grey70") +
   labs(
-    x = "Stärke des Zusammenhangs (GGrößer ist besser)",
+    x = "Korrelation (r) (Höher ist hier immer besser)",
     y = NULL
   ) +
-  theme_minimal(base_size = 12) +
-  theme(
-    legend.position = "none",
-    panel.grid.minor = element_blank(),
-    strip.text = element_text(face = "bold", size = 11)
-  )
+  theme_minimal(base_size = 12)
 
 #Wir speichern wieder unser Bild
 ggsave("Plot4.5.Korrelation.pdf",
@@ -350,7 +345,7 @@ plot.5.data <- survey.data %>%
   
   mutate(Faktor = fct_reorder(Faktor, Freq)) 
 
-ggplot(plot.5.data, aes(x = Freq, y = Faktor, fill = Freq > 0)) +
+plot5 <- ggplot(plot.5.data, aes(x = Freq, y = Faktor, fill = Freq > 0)) +
   geom_col(width = 0.5) +
   geom_vline(xintercept = 0, linetype = "solid", color = "grey70") +
   geom_text(aes(label = sprintf("%.2f", Freq),
@@ -402,7 +397,7 @@ plot.6.data <- plot.6.data %>%
     Var2 = factor(Var2, levels = desired.order)
   )
 
-ggplot(plot.6.data, aes(x = Var1, y = Var2)) +
+plot6 <- ggplot(plot.6.data, aes(x = Var1, y = Var2)) +
   
   geom_tile(aes(fill = Freq)) +
   
@@ -416,8 +411,23 @@ ggplot(plot.6.data, aes(x = Var1, y = Var2)) +
     y = NULL,
     fill = "Korrelation"
   ) +
-  theme_minimal() 
+  theme_minimal(base_size = 12) +
+  
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, color = "black"),
+    axis.text.y = element_text(color = "black"),
+    panel.grid = element_blank(),
+    legend.position = "right"
+  ) +
+  
+  coord_fixed()
 
+ 
+ggsave("Plot6.compressed.Heatmap.pdf",
+       plot = plot6,
+       device = "pdf",
+       width = 10,
+       height = 10)
 
   
   
