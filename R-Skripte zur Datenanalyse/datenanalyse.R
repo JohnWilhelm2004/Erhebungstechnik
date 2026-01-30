@@ -10,6 +10,76 @@ library(tidyverse)
 
 survey.data <- read.csv("results-survey_cleaned.csv")
 
+#Frage/Plot 4 - Macht es einen unterschied für die Note, ob ich ein Tool viel oder wenig nutze?
+
+#Wir erstellen hierfür einen Density Plot, ursprünglich wollte ich nen einfachen 
+#Boxplot verwenden aber das war mir ein wenig zu langweilig
+
+#Wir starten wie immer mit unserer datenumformung
+plot.4.data <- survey.data %>%
+  
+  #Wir wählen die Zeilen aus die wir brauchen das Verständnis und Nutzung 
+  #von KI und Youtube im Vergleich mit Skript und Büchern
+  select(Qualitaet_Verstehen_Num,
+         startsWith(Nutzung_)) %>%
+  
+  #Wir drehen die Daten wieder für den ggplot
+  pivot_longer(cols = starts_with("Nutzung"),
+               names_to = "Tool",
+               values_to = "Haeufigkeit") %>%
+  
+  #Wir machen unseren Datensatz wieder für den Plot "sauber"
+  mutate(Tool = str_remove_all(Tool, "Nutzung_|_Num")) %>%
+  
+  #Wir filtern alle störenden NAs raus 
+  filter(!is.na(Haeufigkeit), !is.na(Qualitaet_Verstehen_Num)) %>%
+  
+  #Jetzt unterscheiden wir die Studenten in 2 Gruppen
+  mutate(Gruppe = if_else(Haeufigkeit >= 4,
+                          "Viel Nutzer",
+                          "Wenig Nutzer")) %>%
+  
+  #Wir filtern Tool nur nach den Tools die wir tatsächlich haben wollen in unserem Density Plot
+  filter(Tool %in% c("Skript", "KI", "YouTube", "Buecher"))
+
+#Jetzt erstellen wir unseren density Plot 
+plot4 <- ggplot(plot.4.data, aes(x = Qualitaet_Verstehen_Num, fill = Gruppe, color = Gruppe)) +
+  
+  #Wir erstellen unseren density Plot mit alpha = 0.4 damit die Hügel transparent sind 
+  geom_density(alpha = 0.4) +
+  
+  #Dieser Befehl sorgt dafür das wir sozusagen Mini Plots für jedes der Materialien erstellen 
+  facet_wrap(~Tool) +
+  
+  #Hier nehmen wir unsere Standard Farbpalette 
+  scale_fill_viridis_d(option = "mako", begin = 0.4, end = 0.8) +
+  scale_color_viridis_d(option = "mako", begin = 0.4, end = 0.8) +
+  
+  #Wir erstellen Überschrift und Achsenbeschriftungen für die Verständnis
+  labs(
+    x = "Verständnis (Von 1 bis 5)",
+    y = "Dichte",
+    fill = "Gruppe"
+  ) +
+  
+  #Wir editieren unser Theme minimal etwas damit es unseren Anforderungen entspricht
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "top", #Sorgt dafür das die Legende oben ist 
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(face = "bold", size = 16), #Überschrift Makieren und Richtige Größe einstellen 
+    axis.text.y = element_text(color = "black", size = 11) #Achsenbeschriftung einfärben und Größe Richtig bestimmen
+  )
+
+
+#Wir speichern wieder unsere Grafik 
+ggsave("Plot4.Verständnisdichte.pdf",
+       plot = plot4,
+       device = "pdf",
+       width = 7,
+       height = 4.5)
+
+
 
 plot.4.5.data <- survey.data %>%
   #Wir wählen wieder unsere gebrauchten Eigenschaften aus, 
