@@ -79,8 +79,8 @@ plot4 <- ggplot(plot.4.data, aes(x = Qualitaet_Verstehen_Num, fill = Gruppe, col
 ggsave("Plot4.Verständnisdichte.pdf",
        plot = plot4,
        device = "pdf",
-       width = 7,
-       height = 4)
+       width = 10,
+       height = 5)
 
 
 # ==============================================================================

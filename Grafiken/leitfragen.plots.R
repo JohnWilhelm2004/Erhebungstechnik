@@ -55,7 +55,7 @@ ggsave("Plot1.Nutzung.pdf",
        plot = plot1,
        device = "pdf",
        width = 10,
-       height = 4.5)
+       height = 5)
 
 #Frage/Plot 2 - Zeigen das viele Studenten sich Zeitersparnis beim Studium wünschen
 
@@ -128,7 +128,7 @@ ggsave("Plot2.cor.time.verst.pdf",
        plot = plot2,
        device = "pdf",
        width = 7,
-       height = 4.5)
+       height = 5)
 
 #Frage/Plot 3 - Welche Materialien Korrelieren Tatsächlich mit dem Gefühl des Veständnis
 
@@ -200,7 +200,7 @@ ggsave("Plot3.Errorplot.pdf",
        plot = plot3,
        device = "pdf",
        width = 7,
-       height = 3.5)
+       height = 5)
 
 
 #Frage/Plot 4 - Macht es einen unterschied für die Note, ob ich ein Tool viel oder wenig nutze?
