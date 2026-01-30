@@ -10,18 +10,17 @@ library(tidyverse)
 
 survey.data <- read.csv("results-survey_cleaned.csv")
 
-#Frage/Plot 4 - Macht es einen unterschied für die Note, ob ich ein Tool viel oder wenig nutze?
 
-#Wir erstellen hierfür einen Density Plot, ursprünglich wollte ich nen einfachen 
-#Boxplot verwenden aber das war mir ein wenig zu langweilig
+# ==============================================================================
+# PLOT 4
+# ==============================================================================
 
-#Wir starten wie immer mit unserer datenumformung
 plot.4.data <- survey.data %>%
   
   #Wir wählen die Zeilen aus die wir brauchen das Verständnis und Nutzung 
   #von KI und Youtube im Vergleich mit Skript und Büchern
-  select(Qualitaet_Verstehen_Num,
-         startsWith(Nutzung_)) %>%
+  select(starts_with("Nutzung_"),
+         Qualitaet_Verstehen_Num) %>%
   
   #Wir drehen die Daten wieder für den ggplot
   pivot_longer(cols = starts_with("Nutzung"),
@@ -35,12 +34,13 @@ plot.4.data <- survey.data %>%
   filter(!is.na(Haeufigkeit), !is.na(Qualitaet_Verstehen_Num)) %>%
   
   #Jetzt unterscheiden wir die Studenten in 2 Gruppen
-  mutate(Gruppe = if_else(Haeufigkeit >= 4,
-                          "Viel Nutzer",
-                          "Wenig Nutzer")) %>%
+  mutate(Gruppe = case_when(
+    Haeufigkeit >= 4 ~ "häufige Nutzung",          # 4 und 5
+    TRUE ~ "(unter-)durchschnittliche Nutzung"     # kleiner gleich 3
+  ))
   
   #Wir filtern Tool nur nach den Tools die wir tatsächlich haben wollen in unserem Density Plot
-  filter(Tool %in% c("Skript", "KI", "YouTube", "Buecher"))
+  # filter(Tool %in% c("Skript", "KI", "YouTube", "Buecher"))
 
 #Jetzt erstellen wir unseren density Plot 
 plot4 <- ggplot(plot.4.data, aes(x = Qualitaet_Verstehen_Num, fill = Gruppe, color = Gruppe)) +
@@ -57,9 +57,12 @@ plot4 <- ggplot(plot.4.data, aes(x = Qualitaet_Verstehen_Num, fill = Gruppe, col
   
   #Wir erstellen Überschrift und Achsenbeschriftungen für die Verständnis
   labs(
+    title = "Verständnis nach Nutzungsintensität",
+    subtitle = "Vergleich: (Unter-)Durchscnittlich (1-3) vs. Viel (4-5) Nutzung",
     x = "Verständnis (Von 1 bis 5)",
     y = "Dichte",
-    fill = "Gruppe"
+    fill = "Gruppe",
+    color = "Gruppe"
   ) +
   
   #Wir editieren unser Theme minimal etwas damit es unseren Anforderungen entspricht
@@ -80,6 +83,9 @@ ggsave("Plot4.Verständnisdichte.pdf",
        height = 4.5)
 
 
+# ==============================================================================
+# PLOT 4.5
+# ==============================================================================
 
 plot.4.5.data <- survey.data %>%
   #Wir wählen wieder unsere gebrauchten Eigenschaften aus, 
@@ -137,6 +143,11 @@ ggsave("Plot4.5.Korrelation.pdf",
        device = "pdf",
        width = 10,
        height = 4.5)
+
+
+# ==============================================================================
+# PLOT 6
+# ==============================================================================
 
 
 # 1. Datenvorbereitung: WIR NEHMEN ALLES
