@@ -376,7 +376,7 @@ ggsave("Plot5.Effekt.cor.pdf",
        plot = plot5,
        device = "pdf",
        width = 7,
-       height = 4.5)
+       height = 4)
 
 #Plot 6 - Sonderanfertigung - Fokussierte Korrelationsheatmap für Annika
 

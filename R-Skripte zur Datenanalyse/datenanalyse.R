@@ -80,7 +80,7 @@ ggsave("Plot4.Verständnisdichte.pdf",
        plot = plot4,
        device = "pdf",
        width = 7,
-       height = 4.5)
+       height = 4)
 
 
 # ==============================================================================
