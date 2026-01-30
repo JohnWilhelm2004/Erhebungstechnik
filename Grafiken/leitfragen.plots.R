@@ -327,11 +327,13 @@ ggsave("Plot4.5.Korrelation.pdf",
        height = 4.5)
 
 #Plot/Frage 5 - Wie Korrelieren Qualitäts und Effekteigenschaften mit der Zufriedenheit
-plot.5.data.cor <- survey.data %>%
+plot.5.data <- survey.data %>%
   
   #Wir suchen alle Eigenschaften raus die mit der Zufriedenheit interessant korrelieren könnten
   select(starts_with("Qualitaet_"), starts_with("Effekt_"), Zufriedenheit_Score) %>%
   
+  select(-Effekt_Zeitaufwand_Num, -Qualitaet_Arbeitsbelastung_Num) %>%
+
   #Wir berechnen die Korrelation zwischen allen werten und filtern wieder NAs
   cor(use = "pairwise.complete.obs") %>%
   
@@ -348,41 +350,25 @@ plot.5.data.cor <- survey.data %>%
   
   mutate(Faktor = fct_reorder(Faktor, Freq)) 
 
-#Da wir in der ersten Transformation die Daten schon umgebaut haben mit correlationen
-#holen wir uns jetzt noch die anderen Sachen die wir brauchen für den finalen Tornado Plot 
-
-plot.5.data.cor.2 <- survey.data %>%
-  #Wir wählen wieder alle Spalten aus die wir brauchen 
-  select(starts_with("Nutzung_"),
-         Effekt_Sicherheit_Num,
-         Effekt_Stress_Num,
-         Effekt_Zeitaufwand_Rev,
-         Qualitaet_Verstehen_Num) %>%
-  #Wir berechnen von diesen Aspekten die Korrelationen und filtern wieder die NAs
-  cor(use = "pairwise.complete.obs") %>%
+ggplot(plot.5.data, aes(x = Freq, y = Faktor, fill = Freq > 0)) +
+  geom_col(width = 0.5) +
+  geom_vline(xintercept = 0, linetype = "solid", color = "grey70") +
+  geom_text(aes(label = sprintf("%.2f", Freq),
+                hjust = ifelse(Freq > 0, -0.3, 1.3)),
+            size = 3.5,
+            color = "black") +
   
-  #Wir wenden wieder unseren Umformatierungstrick an
-  as.table() %>%
-  as.data.frame() %>%
-  filter(
-    str_detect(Var1, "Nutzung"),
-    !str_detect(Var2, "Nutzung")
-  ) %>%
-  mutate(
-    Tool = str_remove_all(Var1, "Nutzung_|_Num"),
-    Effekt = str_remove_all(Var2, "Effekt_|Qualitaet_|_Num|_Rev")
-  )
-
-plot5 <- ggplot(plot.5.data.cor.2, aes(x = Freq, y = reorder(Effekt, Freq), fill = Effekt)) +
-  geom_col() +
-  facet_wrap(~Tool, ncol = 3) +
   scale_fill_viridis_d(option = "mako", begin = 0.3, end = 0.8) +
-  geom_vline(xintercept = 0, linetype = "dashed", color = "grey70") +
   labs(
-    x = "Korrelation (r) (Höher ist hier immer besser)",
-    y = NULL
-  ) +
-  theme_minimal(base_size = 12)
+    x = "Korrelation mit Zufriedenheit",
+    y = NULL,
+    fill = NULL) +
+  
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "top",
+    panel.grid.minor = element_blank()
+  )
 
 #Wir Speichern wieder unsere Ergebnisse
 ggsave("Plot5.Effekt.cor.pdf",
@@ -396,9 +382,7 @@ ggsave("Plot5.Effekt.cor.pdf",
 plot.6.data <- survey.data %>%
   
   select(Zufriedenheit_Score,
-         starts_with("Nutzung"),
-         starts_with("Qualitaet_"),
-         starts_with("Effekt")) %>%
+         matches("^(Nutzung|Qualiteat|Effekt).*_Num$")) %>%
   cor(use = "pairwise.complete.obs") %>%
   as.table() %>%
   as.data.frame() %>%
@@ -433,7 +417,7 @@ ggplot(plot.6.data, aes(x = Var1, y = Var2)) +
     fill = "Korrelation"
   ) +
   theme_minimal() 
-  
+
 
   
   
