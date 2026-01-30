@@ -54,7 +54,7 @@ plot1 <- ggplot(plot.1.data, aes(x = Score, y = Material)) +
 ggsave("Plot1.Nutzung.pdf",
        plot = plot1,
        device = "pdf",
-       width = 7,
+       width = 10,
        height = 4.5)
 
 #Frage/Plot 2 - Zeigen das viele Studenten sich Zeitersparnis beim Studium wünschen
@@ -188,14 +188,19 @@ plot3 <- ggplot(plot.3.data, aes(x = Tool, y = Note, color = Tool)) +
     y = "Verständnis (Subjektiv)",
     x = NULL 
   ) +
-  theme_minimal(base_size = 12)
+  theme_minimal(base_size = 12) +
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, color = "black"),
+    axis.text.y = element_text(color = "black"),
+    legend.position = "right"
+  )
 
 #Wir speichern wieder unseren Plot
 ggsave("Plot3.Errorplot.pdf",
        plot = plot3,
        device = "pdf",
        width = 7,
-       height = 4.5)
+       height = 3.5)
 
 
 #Frage/Plot 4 - Macht es einen unterschied für die Note, ob ich ein Tool viel oder wenig nutze?
@@ -268,7 +273,7 @@ ggsave("Plot4.Verständnisdichte.pdf",
        plot = plot4,
        device = "pdf",
        width = 7,
-       height = 4.5)
+       height = 3.5)
 
 #Frage4.5/Plot4.5 - Mit welchen Effekten Korrelieren die Arbeitsmaterialien
 #Es fehlt zwischen PLot 4 und 5 für die Argumentation unserer These der Übergang deswegen
@@ -319,7 +324,7 @@ ggsave("Plot4.5.Korrelation.pdf",
        plot = plot4.5,
        device = "pdf",
        width = 10,
-       height = 4.5)
+       height = 5.5)
 
 #Plot/Frage 5 - Wie Korrelieren Qualitäts und Effekteigenschaften mit der Zufriedenheit
 plot.5.data <- survey.data %>%
