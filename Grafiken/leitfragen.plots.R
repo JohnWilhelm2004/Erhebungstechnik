@@ -55,7 +55,7 @@ ggsave("Plot1.Nutzung.pdf",
        plot = plot1,
        device = "pdf",
        width = 10,
-       height = 4.5)
+       height = 5)
 
 #Frage/Plot 2 - Zeigen das viele Studenten sich Zeitersparnis beim Studium wünschen
 
@@ -128,7 +128,7 @@ ggsave("Plot2.cor.time.verst.pdf",
        plot = plot2,
        device = "pdf",
        width = 7,
-       height = 4.5)
+       height = 5)
 
 #Frage/Plot 3 - Welche Materialien Korrelieren Tatsächlich mit dem Gefühl des Veständnis
 
@@ -200,7 +200,7 @@ ggsave("Plot3.Errorplot.pdf",
        plot = plot3,
        device = "pdf",
        width = 7,
-       height = 3.5)
+       height = 5)
 
 
 #Frage/Plot 4 - Macht es einen unterschied für die Note, ob ich ein Tool viel oder wenig nutze?
@@ -214,10 +214,7 @@ plot.4.data <- survey.data %>%
   #Wir wählen die Zeilen aus die wir brauchen das Verständnis und Nutzung 
   #von KI und Youtube im Vergleich mit Skript und Büchern
   select(Qualitaet_Verstehen_Num,
-         Nutzung_Skript_Num,
-         Nutzung_KI_Num,
-         Nutzung_YouTube_Num,
-         Nutzung_Buecher_Num) %>%
+         starts_with("Nutzung_")) %>%
   
   #Wir drehen die Daten wieder für den ggplot
   pivot_longer(cols = starts_with("Nutzung"),
@@ -348,6 +345,10 @@ plot.5.data <- survey.data %>%
     Faktor = str_remove_all(Var1, "Qualitaet_|Effekt_|_Num|_Rev"),
   ) %>%
   
+  mutate(
+    Faktor = recode(Faktor, "Stress" = "Entspannung")
+  ) %>%
+  
   mutate(Faktor = fct_reorder(Faktor, Freq)) 
 
 plot5 <- ggplot(plot.5.data, aes(x = Freq, y = Faktor, fill = Freq > 0)) +
@@ -375,14 +376,16 @@ ggsave("Plot5.Effekt.cor.pdf",
        plot = plot5,
        device = "pdf",
        width = 7,
-       height = 4.5)
+       height = 4)
 
 #Plot 6 - Sonderanfertigung - Fokussierte Korrelationsheatmap für Annika
 
 plot.6.data <- survey.data %>%
-  
+  #Wir nehmen uns alle Spalten die wir brauchen 
   select(Zufriedenheit_Score,
          matches("^(Nutzung|Qualiteat|Effekt).*_Num$")) %>%
+  
+  #Wir berechnen die Korrelation(Wichtig alle die nicht beide Sachen beantwortet haben werden herausgefiltert)
   cor(use = "pairwise.complete.obs") %>%
   as.table() %>%
   as.data.frame() %>%
