@@ -87,6 +87,60 @@ ggsave("Plot4.Verständnisdichte.pdf",
 # PLOT 4.5
 # ==============================================================================
 
+
+plot.4.5.data <- survey.data %>%
+  #Wir wählen wieder alle Spalten aus die wir brauchen 
+  select(starts_with("Nutzung_"),
+         Effekt_Sicherheit_Num,
+         Effekt_Stress_Num,
+         Effekt_Zeitaufwand_Rev,
+         Effekt_Motivation_Num,
+         Effekt_Selbststaendig_Num,
+         Effekt_Relevanz_Num,
+         Qualitaet_Verstehen_Num) %>%
+  #Wir berechnen von diesen Aspekten die Korrelationen und filtern wieder die NAs
+  cor(use = "pairwise.complete.obs") %>%
+  
+  #Wir wenden wieder unseren Umformatierungstrick an
+  as.table() %>%
+  as.data.frame() %>%
+  filter(
+    str_detect(Var1, "Nutzung"),
+    !str_detect(Var2, "Nutzung")
+  ) %>%
+  mutate(
+    Tool = str_remove_all(Var1, "Nutzung_|_Num"),
+    Effekt = str_remove_all(Var2, "Effekt_|Qualitaet_|_Num|_Rev")
+  )
+
+plot4.5 <- ggplot(plot.4.5.data, aes(x = Freq, y = reorder(Effekt, Freq), fill = Effekt)) +
+  geom_col() +
+  facet_wrap(~Tool, ncol = 3) +
+  
+  
+  geom_text(aes(label = sprintf("%.2f", Freq),
+                hjust = ifelse(Freq > 0, -0.3, 1.3)),
+            size = 3.5,
+            color = "black") +
+  scale_fill_viridis_d(option = "mako", begin = 0.3, end = 0.8) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "grey70") +
+  labs(
+    x = "Korrelation (r) (Höher ist hier immer besser)",
+    y = NULL
+  ) +
+  theme_minimal(base_size = 12)
+
+#Wir speichern wieder unser Bild
+ggsave("Plot4.5.Korrelation.pdf",
+       plot = plot4.5,
+       device = "pdf",
+       width = 10,
+       height = 5.5)
+
+
+
+
+################################################################################
 # 1. Datenvorbereitung
 plot.4.5.data <- survey.data %>%
   select(starts_with("Nutzung_"),
