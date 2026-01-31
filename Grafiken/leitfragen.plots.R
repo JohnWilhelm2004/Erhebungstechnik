@@ -322,7 +322,8 @@ plot.4.5.data <- survey.data %>%
   #Wir wählen wieder alle Spalten aus die wir brauchen 
   select(starts_with("Nutzung_"),
          starts_with("Effekt_"),
-         Qualitaet_Verstehen_Num) %>%
+         Qualitaet_Verstehen_Num,
+         Zufriedenheits_Score) %>%
   
   select(-Effekt_Zeitaufwand_Num) %>%
   
@@ -334,7 +335,7 @@ plot.4.5.data <- survey.data %>%
   as.data.frame() %>%
   
   filter(
-    str_detect(Var1, "Nutzung"),
+    str_detect(Var1, "Nutzung_"),
     !str_detect(Var2, "Nutzung")
   ) %>%
   mutate(
