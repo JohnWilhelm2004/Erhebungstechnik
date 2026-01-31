@@ -19,12 +19,24 @@ plot.1.data <- survey.data %>%
   #Wir Formen unser Material um damit wir das ganze mit ggplot vernünftig erstellen 
   #können und bennen Material und den Score richtig um 
   pivot_longer(everything(), names_to = "Material", values_to = "Score") %>%
+  
   #Wir entfernen von den Spalten die bleibsel der csv Datei und Sortieren
   #es so das zuerst die Materialspalte und dann die Scorespalte kommt
   mutate(
     Material = str_remove_all(Material, "Nutzung_|_Num"),
-    Material = fct_reorder(Material, Score)
-  )
+  ) %>%
+  
+  mutate(
+    Material = recode(Material,
+                  "YouTube" = "Online-Videos",
+                  "KI" = "KI-Tools",
+                  "Videos" = "Vorlesungsaufzeichnungen",
+                  "Musterloesung" = "Aufgaben/Lösungen",
+                  "Buecher" = "Literatur",
+                  "Skript" = "Vorlesungskript")
+  ) %>%
+  
+  mutate( Material = fct_reorder(Material, Score))
 
 #Wir erstellen unseren Plot für das erste Thema 
 plot1 <- ggplot(plot.1.data, aes(x = Score, y = Material)) +
@@ -43,7 +55,7 @@ plot1 <- ggplot(plot.1.data, aes(x = Score, y = Material)) +
   #Minimal Theme und Farbpallete für Optik vom Plots
   theme_minimal(base_size = 12) +
   theme(
-    legend.position = "top", 
+    legend.position = "none", 
     panel.grid.minor = element_blank(),
     plot.title = element_text(face = "bold", size = 16), 
     axis.text.y = element_text(color = "black", size = 11)
@@ -54,8 +66,8 @@ plot1 <- ggplot(plot.1.data, aes(x = Score, y = Material)) +
 ggsave("Plot1.Nutzung.pdf",
        plot = plot1,
        device = "pdf",
-       width = 10,
-       height = 5)
+       width = 12,
+       height = 4.5)
 
 #Frage/Plot 2 - Zeigen das viele Studenten sich Zeitersparnis beim Studium wünschen
 
@@ -88,8 +100,19 @@ cor.understanding <- survey.data %>%
 plot.2.data <- left_join(cor.time, cor.understanding, by = "Material") %>%
   mutate(
     Material = str_remove_all(Material, "Nutzung_|_Num"), #Wir entfernen wieder die Umfrage überbleibsel
-    Material = fct_reorder(Material, Verstaendnis.Effekt) #Und ordnen die Spalten dann neu an 
-  )
+  ) %>%
+  
+  mutate(
+    Material = recode(Material,
+                      "YouTube" = "Online-Videos",
+                      "KI" = "KI-Tools",
+                      "Videos" = "Vorlesungsaufzeichnungen",
+                      "Musterloesung" = "Aufgaben/Lösungen",
+                      "Buecher" = "Literatur",
+                      "Skript" = "Vorlesungskript")
+  ) %>%
+  
+  mutate( Material = fct_reorder(Material, Verstaendnis.Effekt))
 
 #Jetzt können wir unseren finalen ggplot Erstellen das hier wird ein Dumbell Plot 
 plot2 <- ggplot(plot.2.data) +
@@ -110,9 +133,9 @@ plot2 <- ggplot(plot.2.data) +
   scale_color_viridis_d(option = "mako", begin = 0.2, end = 0.8) +
   #Wir erstellen Überschrift und Achsenbeschriftungen für die Verständnis
   labs(
-       x = "Korrelationsstärke (r)\n ← Spart Zeit/ Wenig Verständnis | Kostet Zeit / Hohes Verständnis →",
-       y = NULL,
-       color = "Gemessener Effekt"
+    x = "Korrelationsstärke (r)\n ← Spart Zeit/ Wenig Verständnis | Kostet Zeit / Hohes Verständnis →",
+    y = NULL,
+    color = "Gemessener Effekt"
   ) +
   #Wir editieren unser Theme minimal etwas damit es unseren Anforderungen entspricht
   theme_minimal(base_size = 12) +
@@ -127,8 +150,8 @@ plot2 <- ggplot(plot.2.data) +
 ggsave("Plot2.cor.time.verst.pdf",
        plot = plot2,
        device = "pdf",
-       width = 7,
-       height = 5)
+       width = 12,
+       height = 4.5)
 
 #Frage/Plot 3 - Welche Materialien Korrelieren Tatsächlich mit dem Gefühl des Veständnis
 
@@ -160,8 +183,18 @@ plot.3.data <- survey.data %>%
     Anzahl.User = n() #Wir zeigen an wie viele Nutzer es gab so kann man die aussagekräftigkeit besser einschätzen
   ) %>%
   
+  mutate(
+    Tool = recode(Tool,
+                      "YouTube" = "Online-Videos",
+                      "KI" = "KI-Tools",
+                      "Videos" = "Vorlesungsaufzeichnungen",
+                      "Musterloesung" = "Aufgaben/Lösungen",
+                      "Buecher" = "Literatur",
+                      "Skript" = "Vorlesungskript")
+  ) %>%
+  
   #Sortieren die Notes so das die beste vorne steht 
-  mutate(Tool = fct_reorder(Tool, Note, .desc = TRUE))
+  mutate(Tool = fct_reorder(Tool, Note, .desc = FALSE))
 
 
 #Jetzt erstellen wir unseren Mean/Error Plot 
@@ -190,7 +223,6 @@ plot3 <- ggplot(plot.3.data, aes(x = Tool, y = Note, color = Tool)) +
   ) +
   theme_minimal(base_size = 12) +
   theme(
-    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, color = "black"),
     axis.text.y = element_text(color = "black"),
     legend.position = "right"
   )
@@ -199,8 +231,8 @@ plot3 <- ggplot(plot.3.data, aes(x = Tool, y = Note, color = Tool)) +
 ggsave("Plot3.Errorplot.pdf",
        plot = plot3,
        device = "pdf",
-       width = 7,
-       height = 5)
+       width = 12,
+       height = 4.5)
 
 
 #Frage/Plot 4 - Macht es einen unterschied für die Note, ob ich ein Tool viel oder wenig nutze?
@@ -217,7 +249,7 @@ plot.4.data <- survey.data %>%
          starts_with("Nutzung_")) %>%
   
   #Wir drehen die Daten wieder für den ggplot
-  pivot_longer(cols = starts_with("Nutzung"),
+  pivot_longer(cols = starts_with("Nutzung_"),
                names_to = "Tool",
                values_to = "Haeufigkeit") %>%
   
@@ -232,8 +264,16 @@ plot.4.data <- survey.data %>%
                           "Viel Nutzer",
                           "Wenig Nutzer")) %>%
   
-  #Wir filtern Tool nur nach den Tools die wir tatsächlich haben wollen in unserem Density Plot
-  filter(Tool %in% c("Skript", "KI", "YouTube", "Buecher"))
+  mutate(
+    Tool = recode(Tool,
+                      "YouTube" = "Online-Videos",
+                      "KI" = "KI-Tools",
+                      "Videos" = "Vorlesungsaufzeichnungen",
+                      "Musterloesung" = "Aufgaben/Lösungen",
+                      "Buecher" = "Literatur",
+                      "Skript" = "Vorlesungskript")
+  ) 
+  
 
 #Jetzt erstellen wir unseren density Plot 
 plot4 <- ggplot(plot.4.data, aes(x = Qualitaet_Verstehen_Num, fill = Gruppe, color = Gruppe)) +
@@ -250,13 +290,14 @@ plot4 <- ggplot(plot.4.data, aes(x = Qualitaet_Verstehen_Num, fill = Gruppe, col
   
   #Wir erstellen Überschrift und Achsenbeschriftungen für die Verständnis
   labs(
-       x = "Verständnis (Von 1 bis 5)",
-       y = "Dichte",
-       fill = "Gruppe"
+    x = "Verständnis (Von 1 bis 5)",
+    y = "Dichte",
+    fill = "Gruppe"
   ) +
   
   #Wir editieren unser Theme minimal etwas damit es unseren Anforderungen entspricht
   theme_minimal(base_size = 12) +
+  
   theme(
     legend.position = "top", #Sorgt dafür das die Legende oben ist 
     panel.grid.minor = element_blank(),
@@ -269,8 +310,8 @@ plot4 <- ggplot(plot.4.data, aes(x = Qualitaet_Verstehen_Num, fill = Gruppe, col
 ggsave("Plot4.Verständnisdichte.pdf",
        plot = plot4,
        device = "pdf",
-       width = 7,
-       height = 3.5)
+       width = 12,
+       height = 7)
 
 #Frage4.5/Plot4.5 - Mit welchen Effekten Korrelieren die Arbeitsmaterialien
 #Es fehlt zwischen PLot 4 und 5 für die Argumentation unserer These der Übergang deswegen
@@ -280,16 +321,18 @@ ggsave("Plot4.Verständnisdichte.pdf",
 plot.4.5.data <- survey.data %>%
   #Wir wählen wieder alle Spalten aus die wir brauchen 
   select(starts_with("Nutzung_"),
-         Effekt_Sicherheit_Num,
-         Effekt_Stress_Num,
-         Effekt_Zeitaufwand_Rev,
+         starts_with("Effekt_"),
          Qualitaet_Verstehen_Num) %>%
+  
+  select(-Effekt_Zeitaufwand_Num) %>%
+  
   #Wir berechnen von diesen Aspekten die Korrelationen und filtern wieder die NAs
   cor(use = "pairwise.complete.obs") %>%
   
   #Wir wenden wieder unseren Umformatierungstrick an
   as.table() %>%
   as.data.frame() %>%
+  
   filter(
     str_detect(Var1, "Nutzung"),
     !str_detect(Var2, "Nutzung")
@@ -297,31 +340,50 @@ plot.4.5.data <- survey.data %>%
   mutate(
     Tool = str_remove_all(Var1, "Nutzung_|_Num"),
     Effekt = str_remove_all(Var2, "Effekt_|Qualitaet_|_Num|_Rev")
-  )
+  ) %>%
+  mutate(
+    Tool = recode(Tool,
+                      "YouTube" = "Online-Videos",
+                      "KI" = "KI-Tools",
+                      "Video" = "Vorlesungsaufzeichnungen",
+                      "Musterloesung" = "Aufgaben/Lösungen",
+                      "Buecher" = "Literatur",
+                      "Skript" = "Vorlesungskript")
+  ) %>%
+  mutate(Effekt = recode(Effekt,
+                       "Zeitaufwand" = "Zeitersparnis",
+                       "Selbstaendig" = "Selbständig"))
+  
 
 plot4.5 <- ggplot(plot.4.5.data, aes(x = Freq, y = reorder(Effekt, Freq), fill = Effekt)) +
+  
   geom_col() +
+  
   facet_wrap(~Tool, ncol = 3) +
-   
-   
-   geom_text(aes(label = sprintf("%.2f", Freq),
-                 hjust = ifelse(Freq > 0, -0.3, 1.3)),
-             size = 3.5,
-             color = "black") +
+  
+  geom_text(aes(label = sprintf("%.2f", Freq),
+                hjust = ifelse(Freq > 0, -0.3, 1.3)),
+            size = 3.5,
+            color = "black") +
   scale_fill_viridis_d(option = "mako", begin = 0.3, end = 0.8) +
+  
   geom_vline(xintercept = 0, linetype = "dashed", color = "grey70") +
+  
+  scale_x_continuous(expand = expansion(mult = c(0.2, 0.15))) +
+  
   labs(
     x = "Korrelation (r) (Höher ist hier immer besser)",
     y = NULL
   ) +
+  
   theme_minimal(base_size = 12)
 
 #Wir speichern wieder unser Bild
 ggsave("Plot4.5.Korrelation.pdf",
        plot = plot4.5,
        device = "pdf",
-       width = 10,
-       height = 5.5)
+       width = 12,
+       height = 8)
 
 #Plot/Frage 5 - Wie Korrelieren Qualitäts und Effekteigenschaften mit der Zufriedenheit
 plot.5.data <- survey.data %>%
@@ -330,7 +392,7 @@ plot.5.data <- survey.data %>%
   select(starts_with("Qualitaet_"), starts_with("Effekt_"), Zufriedenheit_Score) %>%
   
   select(-Effekt_Zeitaufwand_Num, -Qualitaet_Arbeitsbelastung_Num) %>%
-
+  
   #Wir berechnen die Korrelation zwischen allen werten und filtern wieder NAs
   cor(use = "pairwise.complete.obs") %>%
   
@@ -342,32 +404,46 @@ plot.5.data <- survey.data %>%
   filter(Var1 != "Zufriedenheit_Score", Var2 == "Zufriedenheit_Score") %>%
   
   mutate(
-    Faktor = str_remove_all(Var1, "Qualitaet_|Effekt_|_Num|_Rev"),
+    Faktor = str_remove_all(Var1, "Qualitaet_|Effekt_|_Num|_Rev")
   ) %>%
   
   mutate(
-    Faktor = recode(Faktor, "Stress" = "Entspannung")
+    Freq = ifelse(abs(Freq) < 0.005, 0, Freq)
+  ) %>%
+  
+  mutate(
+    Faktor = recode(Faktor,
+                    "Stress" = "Entspannung",
+                    "Selbststaendig" = "Selbständigkeit",
+                    )
   ) %>%
   
   mutate(Faktor = fct_reorder(Faktor, Freq)) 
 
 plot5 <- ggplot(plot.5.data, aes(x = Freq, y = Faktor, fill = Freq > 0)) +
+  
   geom_col(width = 0.5) +
+  
   geom_vline(xintercept = 0, linetype = "solid", color = "grey70") +
+  
   geom_text(aes(label = sprintf("%.2f", Freq),
                 hjust = ifelse(Freq > 0, -0.3, 1.3)),
             size = 3.5,
             color = "black") +
   
   scale_fill_viridis_d(option = "mako", begin = 0.3, end = 0.8) +
+  
+  scale_x_continuous(expand = expansion(mult = c(0.2, 0.15))) +
+  
   labs(
     x = "Korrelation mit Zufriedenheit",
     y = NULL,
     fill = NULL) +
   
   theme_minimal(base_size = 12) +
+  
   theme(
-    legend.position = "top",
+    legend.position = "none",
     panel.grid.minor = element_blank()
   )
 
@@ -375,8 +451,8 @@ plot5 <- ggplot(plot.5.data, aes(x = Freq, y = Faktor, fill = Freq > 0)) +
 ggsave("Plot5.Effekt.cor.pdf",
        plot = plot5,
        device = "pdf",
-       width = 7,
-       height = 4)
+       width = 12,
+       height = 5)
 
 #Plot 6 - Sonderanfertigung - Fokussierte Korrelationsheatmap für Annika
 
@@ -385,7 +461,8 @@ plot.6.data <- survey.data %>%
   select(Zufriedenheit_Score,
          matches("^(Nutzung|Qualiteat|Effekt).*_Num$")) %>%
   
-  #Wir berechnen die Korrelation(Wichtig alle die nicht beide Sachen beantwortet haben werden herausgefiltert)
+  #Wir berechnen die Korrelation(Wichtig alle die nicht beide Sachen beantwortet 
+  #haben werden herausgefiltert)
   cor(use = "pairwise.complete.obs") %>%
   as.table() %>%
   as.data.frame() %>%
@@ -430,13 +507,12 @@ plot6 <- ggplot(plot.6.data, aes(x = Var1, y = Var2)) +
   
   coord_fixed()
 
- 
+
 ggsave("Plot6.compressed.Heatmap.pdf",
        plot = plot6,
        device = "pdf",
        width = 10,
        height = 10)
 
-  
-  
-  
+
+
