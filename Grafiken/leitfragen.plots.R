@@ -489,7 +489,6 @@ plot6 <- ggplot(plot.6.data, aes(x = Var1, y = Var2)) +
   
   geom_text(color = "black", aes(label = round(Freq, 2), size = 2.5)) +
   
-  
   scale_fill_viridis_c(option = "mako", begin = 0.3, end = 0.8, limits = c(-1, 1)) +
   
   labs(
@@ -497,6 +496,7 @@ plot6 <- ggplot(plot.6.data, aes(x = Var1, y = Var2)) +
     y = NULL,
     fill = "Korrelation"
   ) +
+  
   theme_minimal(base_size = 12) +
   
   theme(
